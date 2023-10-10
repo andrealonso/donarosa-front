@@ -28,7 +28,8 @@ export default {
     "@/plugins/mask",
     "@/plugins/moment",
     "@/plugins/validacoes",
-    "@/plugins/buscaCep"
+    "@/plugins/buscaCep",
+    "@/plugins/fileService"
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components

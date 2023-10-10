@@ -73,6 +73,7 @@
             </v-card-actions>
 
         </v-card>
+        <!-- <PreviewImg :open="openPreviewImg" @close="openPreviewImg = false" :item="itemImg" /> -->
     </v-dialog>
 </template>
 
@@ -83,6 +84,8 @@ export default {
     props: ['item', 'isEdit', 'open'],
     data() {
         return {
+            itemImg: {},
+            openPreviewImg: true,
             menu1: false,
             dataNasc: '1981-09-30',
             valid: true,

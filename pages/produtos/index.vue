@@ -48,7 +48,7 @@
             :texto="'Tem certeza que deseja excluir este registro?'" />
 
         <snackbar v-if="snack.active" :snack="snack" @close="snack.active = false" />
-
+        <!-- <PreviewImg :open="openPreviewImg" @close="openPreviewImg = false" /> -->
     </v-row>
 </template>
 
@@ -80,6 +80,7 @@ export default {
             isEdit: false,
             isLoading: false,
             search: '',
+            openPreviewImg: true,
             headers: [
                 { text: 'Cód. Barras', value: 'cod_barras', align: 'left', margin: '12px' },
                 { text: 'Descrição', value: 'descricao', align: 'left' },
@@ -147,7 +148,7 @@ export default {
             const { id } = item
             try {
                 const payload = await this.$axios.$get(`/produto/${id}`)
-                this.payload = produtoModel(payload.dados)
+                this.payload = produtoModel(payload.dados.produto)
                 this.exibCadastro = true
                 this.isEdit = true
             } catch (error) {

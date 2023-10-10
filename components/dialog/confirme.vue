@@ -1,12 +1,12 @@
 <template>
-    <v-dialog v-model="dlgConfirme" max-width="320" persistent>
+    <v-dialog v-model="open" max-width="320" persistent>
         <v-card>
-            <v-card-title :class="['text-center', cor || 'primary']">
-                <span>{{ titulo }}</span>
+            <v-card-title :class="['text-center', dlgConfirme.cor || 'primary']">
+                <span>{{ dlgConfirme.titulo }}</span>
             </v-card-title>
 
             <v-card-text class="font-weight-black">
-                {{ texto }}
+                {{ dlgConfirme.texto }}
             </v-card-text>
 
             <v-card-actions>
@@ -26,7 +26,10 @@
 
 <script>
 export default {
-    props: ['dlgConfirme', 'titulo', 'texto', 'cor'],
+    props: ['open', 'dlgConfirme'],
+    created() {
+        console.log('dialog');
+    },
     methods: {
         fnNao() {
             this.$emit('nao')
