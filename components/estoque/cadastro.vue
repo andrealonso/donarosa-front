@@ -1,62 +1,30 @@
 <template>
     <v-dialog v-model="open" persistent>
         <v-card>
-            <v-card-title>
-                Cadastro de Estoque
+            <v-card-title :class="item.estoque_oper_id === 1 ? 'green--text' : 'red--text'">
+                {{ item.estoque_oper_id === 1 ? 'Lançar uma entrada' : 'Lançar uma saída' }}
             </v-card-title>
             <v-card-text>
                 <v-form ref="form" v-model="valid" lazy-validation>
                     <v-container>
-                        <v-row>
-                            <v-col cols="12" sm="6" md="5">
-                                <v-text-field :rules="[rules.required, rules.counter]" v-model="item.nome" label="Nome"
-                                    outlined dense required validate-on-blur></v-text-field>
+                        <v-row dense>
+                            <v-col cols="12" sm="12" md="12">
+                                <v-text-field :rules="[rules.required]" readonly hide-spin-buttons :value="cptNomeProd"
+                                    label="Produto selecionado" outlined dense></v-text-field>
                             </v-col>
 
-                            <v-col cols="12" sm="6" md="4">
-                                <v-text-field :rules="[rules.required]" validate-on-blur v-model="item.cpf" label="CPF"
-                                    outlined dense v-mask="['###.###.###-##']" required></v-text-field>
-                            </v-col>
                             <v-col cols="12" sm="6" md="3">
-                                <v-text-field v-model="item.dt_nasc" type="date" label="Data de Nasc." outlined
-                                    dense></v-text-field>
-                            </v-col>
-                            <v-col cols="12" sm="6" md="4">
-                                <v-text-field :rules="[rules.required]" validate-on-blur v-model="item.tel" label="Telefone"
-                                    outlined dense v-mask="['(##)#####-####']"></v-text-field>
-                            </v-col>
-                            <v-col cols="12" sm="6" md="4">
-                                <v-text-field type="email" v-model="item.email" label="Email" outlined dense></v-text-field>
-                            </v-col>
-                            <v-col cols="12" sm="6" md="4">
-                                <v-autocomplete :rules="[]" label="Sexo" outlined auto-select-first dense
-                                    :items="listaSelecao.sexo" :item-text="item => item.descricao"
-                                    :item-value="item => item.id" v-model="item.sexo_id">
-                                </v-autocomplete>
-                            </v-col>
-
-                            <v-col cols="12" sm="6" md="2">
-                                <v-text-field v-mask="['#####-###']" v-model="item.cep" label="CEP" outlined dense
-                                    @blur="consultaCep"></v-text-field>
-                            </v-col>
-                            <v-col cols="12" sm="6" md="8">
-                                <v-text-field v-model="item.rua" label="Rua" outlined dense></v-text-field>
+                                <v-text-field v-model="item.data" type="date" label="Data" outlined dense></v-text-field>
                             </v-col>
                             <v-col cols="12" sm="6" md="2">
-                                <v-text-field ref="inputNum" v-model="item.num" label="Núm." outlined dense></v-text-field>
+                                <v-text-field type="number" :rules="[rules.notZero]" hide-spin-buttons v-model="item.qtd"
+                                    label="Qtd" outlined dense></v-text-field>
                             </v-col>
-                            <v-col cols="12" sm="6" md="5">
-                                <v-text-field v-model="item.bairro" label="Bairro" outlined dense></v-text-field>
+                            <v-col cols="12" sm="6" md="7">
+                                <v-text-field :rules="[rules.required, rules.counter]" v-model="item.descricao"
+                                    label="Descrição" outlined dense required validate-on-blur></v-text-field>
                             </v-col>
-                            <v-col cols="12" sm="6" md="5">
-                                <v-text-field v-model="item.cidade" label="Cidade" outlined dense></v-text-field>
-                            </v-col>
-                            <v-col cols="12" sm="6" md="2">
-                                <v-text-field v-model="item.uf" label="UF" outlined dense></v-text-field>
-                            </v-col>
-
                         </v-row>
-
                     </v-container>
                 </v-form>
             </v-card-text>
@@ -71,7 +39,6 @@
                 </v-btn>
                 <v-spacer></v-spacer>
             </v-card-actions>
-
         </v-card>
     </v-dialog>
 </template>
@@ -80,7 +47,7 @@
 import moment from 'moment'
 
 export default {
-    props: ['item', 'isEdit', 'open'],
+    props: ['item', 'isEdit', 'open', 'produto'],
     data() {
         return {
             menu1: false,
@@ -95,12 +62,7 @@ export default {
             rules: {
                 required: value => !!value || 'Requerido!',
                 counter: value => value.length >= 6 || 'Min. de 6 dígitos!',
-                email: value => {
-                    const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-                    return pattern.test(value) || 'Email inválido'
-                },
-                cpfValido: value => this.$cpfValido(value) || 'CPF inválido!',
-                senhaDiferente: value => this.comparaSenha(value) || 'Senha não confere! Repita a mesma senha.'
+                notZero: value => value !== 0 || 'A quantidade não pode ser zero!'
             },
             listaSelecao: {
                 sexo: [
@@ -108,87 +70,49 @@ export default {
                     { id: 2, descricao: "Feminino" }
                 ]
             }
-
         }
     },
     computed: {
-        computedDataNasc() {
-            moment.locale('pt-br')
-            console.log(this.item.dt_nasc);
-            return this.item.dt_nasc ? moment.utc(this.item.data_inicio).format('L') : ''
-
-        },
+        cptNomeProd() {
+            const { cod_barras, descricao, prod_cor, prod_compri, prod_tamanho } = this.produto
+            // let codbarras, nome, cor, compri, tamanho
+            let nomeProd = [cod_barras, descricao, prod_cor?.descricao, prod_compri?.descricao, prod_tamanho?.descricao]
+            return nomeProd.join(' ')
+        }
     },
     methods: {
 
-        async consultaCep() {
-            const result = await this.$buscaCep(this.item.cep)
-            if (result) {
-                this.item.rua = result?.logradouro || null
-                this.item.bairro = result?.bairro || null
-                this.item.cidade = result?.localidade || null
-                this.item.uf = result?.uf || null
-                this.$refs.inputNum.focus()
-            } else {
-                this.exibSnack('CEP inválido ou não encontrado!', 'error')
-                this.limparEndereco()
-            }
-        },
-
-        corStatus(id) {
-            if (id == 1) return 'green--text'
-            if (id == 2) return 'red--text'
-        },
         async salvarItem(item) {
-            if (!this.$refs.form.validate()) {
-                return
-            }
-            if (this.foiAlterado()) {
-                if (!this.isEdit) {
-                    this.createItem(item)
+            try {
+                if (!this.$refs.form.validate()) {
+                    return
                 } else {
-                    this.updateItem(item)
-                }
-            } else {
-                this.$emit('close')
-                this.exibSnack('Registro salvo com sucesso!', 'success')
-            }
+                    if (item.estoque_oper_id === 1 && item.qtd < 0) item.qtd = item.qtd * -1
+                    if (item.estoque_oper_id === 2 && item.qtd > 0) item.qtd = item.qtd * -1
+                    delete item.id
+                    const { dados } = await this.$axios.$post(`/estoque`, item,)
 
+                    this.$emit('atualizar', dados)
+                    this.$emit('close')
+                    this.exibSnack('Registro salvo com sucesso!', 'success')
+                }
+            } catch (error) {
+                this.exibSnack('Não foi possível salvar o registro! Verifique o nome ou cpf já foram cadastrados', 'red lighten-2')
+                console.log(error);
+            }
         },
         foiAlterado() {
             if (JSON.stringify(this.itemOld) === JSON.stringify(this.item))
                 return false
             return true
         },
-        async createItem(item) {
-            try {
-                delete item.id
-                await this.$axios.$post(`/cliente`, item,)
-                this.$emit('atualizarListagem')
-                this.$emit('close')
-                this.exibSnack('Registro salvo com sucesso!', 'success')
-            } catch (error) {
-                this.exibSnack('Não foi possível salvar o registro! Verifique o nome ou cpf já foram cadastrados', 'red lighten-2')
-                console.log(error);
-            }
-        },
-        async updateItem(item) {
-            try {
-                await this.$axios.$put(`/cliente/${item.id}`, item)
-                this.$emit('atualizarListagem')
-                this.$emit('close')
-                this.exibSnack('Registro salvo com sucesso!', 'success')
-            } catch (error) {
-                this.exibSnack('Não foi possível salvar o registro! Verifique os dados e tente novamente', 'red lighten-2')
-                console.log(error);
-            }
-        },
+
         cancelarRegistro() {
             this.$emit('close')
         },
         async deleteItem(item) {
             try {
-                await this.$axios.$delete(`/cliente/${item.id}`)
+                await this.$axios.$delete(`/estoque/${item.id}`)
                 this.$emit('atualizarListagem')
                 this.$emit('close')
                 this.exibSnack('Registro exluído com sucesso!', 'success')

@@ -10,6 +10,10 @@
                         <v-row>
                             <v-col cols="12" sm="12" md="8">
                                 <v-row>
+                                    <v-col cols="12" sm="12" md="3">
+                                        <v-text-field v-model="item.cod_barras" label="Cód. Barras" outlined
+                                            dense></v-text-field>
+                                    </v-col>
                                     <v-col cols="12" sm="12" md="6">
                                         <v-text-field :rules="[rules.required, rules.counter]" v-model="item.descricao"
                                             label="Descrição" outlined dense required validate-on-blur></v-text-field>
@@ -61,10 +65,7 @@
                                         <v-text-field v-model="item.vl_aluguel" label="Valor Aluguel" outlined
                                             dense></v-text-field>
                                     </v-col>
-                                    <v-col cols="12" sm="12" md="3">
-                                        <v-text-field type="number" hide-spin-buttons v-model="item.qtd_estoque"
-                                            label="Qtd. Estoque" outlined dense></v-text-field>
-                                    </v-col>
+
                                     <v-col cols="12">
                                         <v-row>
                                             <v-col cols="12" md="3" class="d-flex">
@@ -72,10 +73,10 @@
                                                     v-model="item.qtd_estoque" label="Qtd. Estoque" outlined
                                                     dense></v-text-field>
                                                 <v-btn icon>
-                                                    <v-icon large @click="alterarImg(imgIndex)">mdi-plus</v-icon>
+                                                    <v-icon large @click="selectProd('e')">mdi-plus</v-icon>
                                                 </v-btn>
                                                 <v-btn icon>
-                                                    <v-icon large @click="dlgConfImg">mdi-minus</v-icon>
+                                                    <v-icon large @click="selectProd('s')">mdi-minus</v-icon>
                                                 </v-btn>
 
 
@@ -97,7 +98,10 @@
                                                 class="d-flex flex-column" color="#424242">
                                                 <v-img class="img-zoom" contain
                                                     :src="item.src ? item.src : 'http://localhost:3000/img/img-padrao.svg'"></v-img>
-                                                <v-sheet class="text-subtitle-2">{{ item.lado?.toUpperCase() }}</v-sheet>
+
+                                                <v-sheet class="text-subtitle-2">{{
+                                                    item.lado?.toUpperCase()
+                                                }}</v-sheet>
                                             </v-card>
                                         </v-carousel-item>
                                     </v-carousel>
@@ -134,6 +138,9 @@
                 <v-spacer></v-spacer>
             </v-card-actions>
         </v-card>
+        <estoqueCadastro v-if="exibCadEstoque" :open="exibCadEstoque" @close="exibCadEstoque = false"
+            @atualizar="atualizaQtdEst" @exibSnack="exibSnack" :isEdit="isEdit" :item="payloadEstoque"
+            :produto="prodSelecionado" />
         <DialogConfirme v-if="confirmeExcImg" :dlgConfirme="dlgConfirme" :open="confirmeExcImg"
             @nao="confirmeExcImg = false" @sim="excluirImg(imgIndex)" />
         <DialogConfirme v-if="confirmeExcItem" :dlgConfirme="dlgConfirme" :open="confirmeExcItem"
@@ -144,6 +151,7 @@
 
 <script>
 import moment from 'moment'
+import { estoqueModel } from '~/models/EstoqueModel'
 
 export default {
     props: ['item', 'isEdit', 'open'],
@@ -161,6 +169,10 @@ export default {
             widthImg: '100%',
             imgIndex: 0,
             listImgs: [],
+            isLancEntrada: false,
+            exibCadEstoque: false,
+            payloadEstoque: {},
+            prodSelecionado: {},
             listPadrao: [
                 { id: 0, lado: 'frente', src: null },
                 { id: 0, lado: 'verso', src: null },
@@ -220,6 +232,25 @@ export default {
         }
     },
     methods: {
+        async selectProd(operacao) {
+            this.isLancEntrada = operacao === 'e' ? true : false
+            this.lancEstoque(this.item)
+            return
+        },
+        lancEstoque(produto) {
+            let estoque = estoqueModel()
+            estoque.produto_id = produto.id
+            estoque.estoque_oper_id = this.isLancEntrada ? 1 : 2
+            estoque.data = moment.utc().format('YYYY-MM-DD')
+            this.prodSelecionado = produto
+            this.payloadEstoque = estoque
+            this.exibCadEstoque = true
+        },
+        atualizaQtdEst(produto) {
+            if (produto)
+                this.item.qtd_estoque = produto.qtd_estoque
+            this.$emit('atualizarListagem')
+        },
         exibSnack(texto, cor) {
             this.snack.color = cor || ''
             this.snack.text = texto || ''
@@ -234,7 +265,6 @@ export default {
             this.confirmeExcImg = true
         },
         dlgConfItem() {
-
             this.dlgConfirme.titulo = 'Exclusão de registro'
             this.dlgConfirme.texto = 'Tem certesa que deseja excluir este registro?'
             this.dlgConfirme.cor = 'error'

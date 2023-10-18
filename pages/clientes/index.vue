@@ -9,7 +9,8 @@
                         hide-details>
                     </v-text-field>
                 </v-card-title>
-                <v-data-table :headers="headers" :items="listagem" :search="search" dense mobile-breakpoint="400">
+                <v-data-table :footer-props="tableFooterPros" :headers="headers" :items="listagem" :search="search" dense
+                    mobile-breakpoint="400">
                     <!-- eslint-disable-next-line -->
                     <template v-slot:item.actions="{ item }">
                         <v-icon @click.prevent="exibirItem(item)">mdi-pencil</v-icon>
@@ -74,6 +75,10 @@ export default {
 
     data() {
         return {
+            tableFooterPros: {
+                itemsPerPageText: 'Itens por pág.',
+                itemsPerPageOptions: [50, 100, -1]
+            },
             itemSelect: null,
             dlgConfirme: false,
             exibCadastro: false,
@@ -124,6 +129,19 @@ export default {
             this.itemSelect = item
             this.dlgConfirme = true
         },
+
+        async exibirItem(item) {
+            const { id } = item
+            try {
+                const payload = await this.$axios.$get(`/cliente/${id}`)
+                this.payload = clienteModel(payload.dados)
+                this.exibCadastro = true
+                this.isEdit = true
+            } catch (error) {
+                console.log(error);
+            }
+        },
+
         async atualizarListagem() {
             try {
                 const resposta = await this.$axios.$get('/clientes')
@@ -135,18 +153,6 @@ export default {
             } catch (error) {
                 this.listagem = []
                 console.log({ error });
-            }
-        },
-
-        async exibirItem(item) {
-            const { id } = item
-            try {
-                const payload = await this.$axios.$get(`/cliente/${id}`)
-                this.payload = clienteModel(payload.dados)
-                this.exibCadastro = true
-                this.isEdit = true
-            } catch (error) {
-                console.log(error);
             }
         },
         cancelar() {

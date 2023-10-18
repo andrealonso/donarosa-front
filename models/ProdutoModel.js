@@ -1,5 +1,4 @@
 export function produtoModel(payload) {
-
     if (payload?.id) {
         return {
             id: payload.id || null,
@@ -34,5 +33,4 @@ export function produtoModel(payload) {
             prod_categoria_id: null
         }
     }
-
 }

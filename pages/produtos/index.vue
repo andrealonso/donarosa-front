@@ -9,7 +9,8 @@
                         hide-details>
                     </v-text-field>
                 </v-card-title>
-                <v-data-table :headers="headers" :items="listagem" :search="search" dense mobile-breakpoint="400">
+                <v-data-table :headers="headers" :items="listagem" :search="search" dense mobile-breakpoint="400"
+                    :footer-props="tableFooterPros">
                     <!-- eslint-disable-next-line -->
                     <template v-slot:item.actions="{ item }">
                         <v-icon @click.prevent="exibirItem(item)">mdi-pencil</v-icon>
@@ -26,6 +27,11 @@
                     <template v-slot:item.id="{ item }">
                         {{ item.id | zeroLeft }}
                     </template>
+                    <!-- eslint-disable-next-line -->
+                    <template v-slot:item.vl_aluguel="{ item }">
+                        {{ item.vl_aluguel | formatMoeda }}
+                    </template>
+
                 </v-data-table>
             </v-card>
         </v-col>
@@ -79,18 +85,18 @@ export default {
             exibCadastro: false,
             isEdit: false,
             isLoading: false,
-            search: '',
             openPreviewImg: true,
+            search: '',
             headers: [
                 { text: 'Cód. Barras', value: 'cod_barras', align: 'left', margin: '12px' },
+                { text: 'Qtd', value: 'qtd_estoque', align: 'center' },
                 { text: 'Descrição', value: 'descricao', align: 'left' },
                 { text: 'Categoria', value: 'prod_categoria.descricao', align: 'center' },
                 { text: 'Cor', value: 'prod_cor.descricao', align: 'center' },
-                { text: 'Qtd', value: 'qtd_estoque', align: 'center' },
-                { text: 'Valor Aluguel', value: 'vl_aluguel', align: 'center' },
                 { text: 'Tamanho', value: 'prod_tamanho.descricao', align: 'center' },
                 { text: 'Compri.', value: 'prod_compri.descricao', align: 'center' },
                 { text: 'Fábrica', value: 'prod_fabrica.descricao', align: 'center' },
+                { text: 'Valor Aluguel', value: 'vl_aluguel', align: 'center' },
                 { text: 'Ações', value: 'actions', sortable: false, align: 'right' },
             ],
             exibLista: false,
@@ -100,6 +106,10 @@ export default {
                 text: "teste",
                 timeout: 2000,
                 color: "primary"
+            },
+            tableFooterPros: {
+                itemsPerPageText: 'Itens por pág.',
+                itemsPerPageOptions: [50, 100, -1]
             }
         }
     },
@@ -109,6 +119,9 @@ export default {
                 minimumIntegerDigits: 6,
                 useGrouping: false
             })
+        },
+        formatMoeda(valor) {
+            return valor.toLocaleString('pt-br', { minimumFractionDigits: 2 })
         }
     },
     methods: {

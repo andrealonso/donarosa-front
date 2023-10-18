@@ -27,9 +27,6 @@
 <script>
 export default {
     props: ['open', 'dlgConfirme'],
-    created() {
-        console.log('dialog');
-    },
     methods: {
         fnNao() {
             this.$emit('nao')

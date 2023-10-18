@@ -35,7 +35,6 @@ export function clienteModel(payload) {
             uf: null,
             sexo_id: null,
             ativo_status_id: null,
-
         }
     }
 
