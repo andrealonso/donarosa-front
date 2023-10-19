@@ -13,6 +13,8 @@
                     <!-- eslint-disable-next-line -->
                     <template v-slot:item.actions="{ item }">
                         <v-icon @click.prevent="exibirItem(item)">mdi-pencil</v-icon>
+                        <v-icon @click.prevent="editUser(item)">{{
+                            item.usuario.length > 0 ? "mdi-account-key" : "mdi-account-key-outline" }}</v-icon>
                         <!-- <span>
                             <v-icon @click.prevent="confirmeExclusao(item)">mdi-delete</v-icon>
                         </span> -->
@@ -40,7 +42,8 @@
 
         <funcionariosCadastro v-if="exibCadastro" :open="exibCadastro" @close="exibCadastro = false" @cancelar="cancelar"
             @atualizarListagem="atualizarListagem" @exibSnack="exibSnack" :isEdit="isEdit" :item="payload" />
-
+        <usuarioCadastro v-if="exibCadUser" :open="exibCadUser" :isEdit="isEditUser" :item="usuario"
+            @close="exibCadUser = false" :listaNiveis="listaNiveis" @atualizar="atualizarListagem" />
 
         <DialogLoading v-if="isLoading" :is-loading="isLoading" :cor="'purple lighten-1'" :texto="'Atualizando dados...'" />
         <DialogConfirmacao v-if="dlgConfirme" :dlg-confirme="dlgConfirme" @nao="dlgConfirme = false" @sim="excluirItem"
@@ -53,12 +56,13 @@
 </template>
 
 <script>
-import { clienteModel } from '~/models/ClienteModel'
+import { funcionarioModel } from '~/models/FuncionarioModel'
+import { usuarioModel } from '~/models/UsuarioModel'
 export default {
     async asyncData({ $axios }) {
         let listagem = []
         try {
-            const resposta = await $axios.$get('/clientes')
+            const resposta = await $axios.$get('/funcionarios')
             if (!resposta?.erro) {
                 listagem = resposta.dados.registros
             } else {
@@ -70,16 +74,19 @@ export default {
             return { listagem }
         }
     },
-    name: 'clientes',
+    name: 'funcionarios',
 
     data() {
         return {
             itemSelect: null,
             dlgConfirme: false,
             exibCadastro: false,
+            exibCadUser: false,
             isEdit: false,
+            isEditUser: false,
             isLoading: false,
             search: '',
+            usuario: usuarioModel(),
             headers: [
                 { text: 'Código', value: 'id', align: 'left', margin: '12px' },
                 { text: 'Nome', value: 'nome', align: 'left' },
@@ -88,13 +95,17 @@ export default {
                 { text: 'Ações', value: 'actions', sortable: false, align: 'right' },
             ],
             exibLista: false,
-            payload: clienteModel(),
+            payload: funcionarioModel(),
             snack: {
                 active: false,
                 text: "teste",
                 timeout: 2000,
                 color: "primary"
-            }
+            },
+            listaNiveis: [
+                { id: 1, descricao: "Administrador" },
+                { id: 2, descricao: "Balconista" },
+            ]
         }
     },
     filters: {
@@ -106,12 +117,25 @@ export default {
         }
     },
     methods: {
+        async editUser(func) {
+            if (func.usuario.length > 0) {
+                this.usuario = func.usuario[0]
+                this.isEditUser = true
+                console.log('aqui');
+                this.exibCadUser = true
+            } else {
+                this.usuario = usuarioModel()
+                this.usuario.funcionario_id = func.id
+                this.isEditUser = false
+                this.exibCadUser = true
+            }
+        },
         corStatus(id) {
             if (id == 1) return 'green--text'
             if (id == 2) return 'red--text'
         },
         novoItem() {
-            this.payload = clienteModel()
+            this.payload = funcionarioModel()
             this.isEdit = false
             this.exibCadastro = true
         },
@@ -126,7 +150,7 @@ export default {
         },
         async atualizarListagem() {
             try {
-                const resposta = await this.$axios.$get('/clientes')
+                const resposta = await this.$axios.$get('/funcionarios')
                 if (!resposta?.erro) {
                     this.listagem = resposta.dados.registros
                 } else {
@@ -141,8 +165,8 @@ export default {
         async exibirItem(item) {
             const { id } = item
             try {
-                const payload = await this.$axios.$get(`/cliente/${id}`)
-                this.payload = clienteModel(payload.dados)
+                const payload = await this.$axios.$get(`/funcionario/${id}`)
+                this.payload = funcionarioModel(payload.dados)
                 this.exibCadastro = true
                 this.isEdit = true
             } catch (error) {
@@ -150,7 +174,7 @@ export default {
             }
         },
         cancelar() {
-            this.payload = clienteModel()
+            this.payload = funcionarioModel()
             this.exibCadastro = false
         }
     }

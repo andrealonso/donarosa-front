@@ -6,34 +6,11 @@
                 <v-form ref="form" v-model="valid" lazy-validation>
                     <v-container>
                         <v-row>
-                            <v-col cols="12" sm="6" md="6">
-                                <v-text-field :rules="[rules.required, rules.counter]" v-model="item.nome" label="Nome"
-                                    outlined dense required validate-on-blur></v-text-field>
-                            </v-col>
-                            <v-col cols="12" sm="6" md="6">
-                                <v-text-field :rules="[rules.required, rules.cpfValido]" validate-on-blur v-model="item.cpf"
-                                    label="CPF" outlined dense v-mask="['###.###.###-##']" required></v-text-field>
-                            </v-col>
-                            <v-col cols="12" sm="6" md="3">
-                                <v-text-field :rules="[rules.required]" validate-on-blur v-model="item.tel" label="Telefone"
-                                    outlined dense v-mask="['(##)#####-####']"></v-text-field>
-                            </v-col>
 
-                            <v-col cols="12" sm="6" md="3">
-                                <v-autocomplete :rules="[rules.required]" label="Tipo de usuário" outlined auto-select-first
-                                    dense :items="tiposUser" :item-text="item => item.descri" :item-value="item => item.id"
-                                    v-model="item.user_tipo_id" :disabled="desativarCampoTipo" @change="alterandoTipoUser">
-                                </v-autocomplete>
-                            </v-col>
-                            <v-col cols="12" sm="6" md="6">
-                                <v-autocomplete label="Empresa" outlined auto-select-first dense :items="listaEmpresas"
-                                    :item-text="item => item.nome" :item-value="item => item.id" v-model="item.empresas_id"
-                                    :disabled="desativarCampoEmpresa" :error-messages="formErros.empresaReqerida">
-                                </v-autocomplete>
-                            </v-col>
+
                             <v-col cols="12" sm="6" md="4">
-                                <v-text-field type="email" :rules="[rules.email, rules.required]" v-model="item.login"
-                                    label="Login" outlined dense></v-text-field>
+                                <v-text-field :rules="[rules.required]" v-model="item.login" label="Login" outlined
+                                    dense></v-text-field>
                             </v-col>
 
                             <v-col cols="12" sm="4">
@@ -43,6 +20,12 @@
                             <v-col cols="12" sm="4">
                                 <v-text-field type="password" v-model="senhaCompare" label="Repetir Senha" outlined dense
                                     required :error-messages="formErros.senha"></v-text-field>
+                            </v-col>
+                            <v-col cols="12" sm="6" md="3">
+                                <v-autocomplete :rules="[rules.required]" label="Nível do usuário" outlined
+                                    auto-select-first dense :items="listaNiveis" :item-text="item => item.descricao"
+                                    :item-value="item => item.id" v-model="item.user_nivel_id" @change="alterandoTipoUser">
+                                </v-autocomplete>
                             </v-col>
                             <v-col cols="12" sm="6" md="3">
                                 <v-autocomplete label="Status" outlined auto-select-first dense :items="status"
@@ -81,20 +64,12 @@
 import moment from 'moment'
 
 export default {
-    props: ['item', 'isEdit', 'open'],
-    async beforeMount() {
-        this.configTipoUser(this.$store.state.user)
-        this.alterandoTipoUser()
-        const { dados } = await this.$axios.$get('/empresas')
-        this.listaEmpresas = dados.registros
-    },
+    props: ['item', 'isEdit', 'open', 'listaNiveis'],
     data() {
         return {
             valid: true,
             senhaCompare: null,
-            desativarCampoTipo: false,
-            desativarCampoEmpresa: false,
-            listaEmpresas: [],
+
             status: [
                 { id: 1, descri: "ATIVO" },
                 { id: 2, descri: "INATIVO" }
@@ -115,22 +90,11 @@ export default {
                 cpfValido: value => this.$cpfValido(value) || 'CPF inválido!',
                 senhaDiferente: value => this.checkSenha(value) || 'Senha não confere! Repita a mesma senha.'
             },
-            tiposUser: []
+
         }
     },
-    computed: {
 
-
-    },
     methods: {
-        alterandoTipoUser() {
-            if (this.item.user_tipo_id !== 3 && this.item.user_tipo_id !== 5) {
-                this.desativarCampoEmpresa = true
-                this.item.empresas_id = null
-            } else {
-                this.desativarCampoEmpresa = false
-            }
-        },
         async configTipoUser(user) {
             let lista = [
                 { id: 1, descri: "ADM ROOT" },
@@ -214,12 +178,6 @@ export default {
             if (!this.$refs.form.validate()) {
                 return
             }
-            if (this.item.user_tipo_id === 3 || this.item.user_tipo_id === 5) {
-                if (!this.item.empresas_id) {
-                    this.formErros.empresaReqerida = 'Selecione a empresa!'
-                    return
-                }
-            }
 
             if (!this.isEdit) {
                 this.createItem(item)
@@ -234,7 +192,7 @@ export default {
                 delete item.id
                 const user = await this.$axios.$post(`/usuario`, item)
                 this.exibSnack('Registro salvo com sucesso!', 'success')
-                this.$emit('atualizarListagem')
+                this.$emit('atualizar')
                 this.$emit('close')
             } catch (erro) {
                 this.exibSnack('Não foi possível salvar o registro! Verifique os dados e tente novamente', 'error')
@@ -245,7 +203,7 @@ export default {
             try {
                 const user = await this.$axios.$put(`/usuario/${item.id}`, item)
                 this.exibSnack('Registro salvo com sucesso!', 'success')
-                this.$emit('atualizarListagem')
+                this.$emit('atualizar')
                 this.$emit('close')
             } catch (erro) {
                 this.exibSnack('Não foi possível salvar o registro! Verifique os dados estão corretos ou já poussua outro usuário com esses dados!', 'error')
@@ -258,11 +216,10 @@ export default {
         async deleteItem(item) {
             try {
                 await this.$axios.$delete(`/usuario/${item.id}`)
-                this.$emit('atualizarListagem')
+                this.$emit('atualizar')
                 this.$emit('close')
                 this.exibSnack('Registro exluído com sucesso!', 'success')
             } catch (erro) {
-
                 this.exibSnack('Não foi possível excluir o registro!', 'error')
                 console.log(erro);
             }

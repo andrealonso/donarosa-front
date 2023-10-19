@@ -2,107 +2,60 @@
     <v-dialog v-model="open" persistent>
         <v-card>
             <v-card-title>
-                Cadastro de funcionários
+                Cadastro de Funcionários
             </v-card-title>
             <v-card-text>
                 <v-form ref="form" v-model="valid" lazy-validation>
                     <v-container>
                         <v-row>
-                            <v-col cols="12" sm="6" md="6">
-
+                            <v-col cols="12" sm="6" md="5">
                                 <v-text-field :rules="[rules.required, rules.counter]" v-model="item.nome" label="Nome"
-                                    outlined dense :error-messages="formErros.nome" required
-                                    validate-on-blur></v-text-field>
+                                    outlined dense required validate-on-blur></v-text-field>
                             </v-col>
-                            <v-col cols="12" sm="6" md="6">
-                                <v-text-field :rules="[rules.required, rules.cpfValido]" validate-on-blur
-                                    v-model="item.cpf_cnpj" label="CPF" outlined dense v-mask="['###.###.###-##']" required
-                                    :error-messages="formErros.cpf"></v-text-field>
+                            <v-col cols="12" sm="6" md="4">
+                                <v-text-field :rules="[rules.required]" validate-on-blur v-model="item.cpf" label="CPF"
+                                    outlined dense v-mask="['###.###.###-##']" required></v-text-field>
                             </v-col>
-                            <v-col cols="12" sm="6" md="6">
-                                <v-text-field :rules="[rules.required]" validate-on-blur v-model="item.telefone"
-                                    label="Telefone" outlined dense v-mask="['(##)#####-####']"></v-text-field>
+                            <v-col cols="12" sm="6" md="3">
+                                <v-text-field v-model="item.dt_nasc" type="date" label="Data de Nasc." outlined
+                                    dense></v-text-field>
                             </v-col>
-                            <v-col cols="12" sm="6" md="6">
-                                <v-text-field :rules="[rules.required, rules.email]" validate-on-blur type="email"
-                                    v-model="item.email" label="Email" outlined dense></v-text-field>
+                            <v-col cols="12" sm="6" md="4">
+                                <v-text-field :rules="[rules.required]" validate-on-blur v-model="item.tel" label="Telefone"
+                                    outlined dense v-mask="['(##)#####-####']"></v-text-field>
                             </v-col>
-                            <!--         Cadastro de Usuário          -->
-                            <template v-if="exibUsuario">
-                                <template v-if="!isEdit">
-                                    <v-col cols="12" sm="12" md="12">
-                                        <h4>Login de acesso:</h4>
-                                    </v-col>
-                                    <v-col cols="12" sm="6" md="6">
-                                        <v-text-field type="email" @focus="copiaEmail" :rules="[rules.required]"
-                                            validate-on-blur v-model="item.usuario.login" label="Login (Email)" outlined
-                                            dense></v-text-field>
-                                    </v-col>
-                                    <v-col cols="12" sm="6" md="6">
-                                        <v-autocomplete label="Status" :rules="[rules.required]" validate-on-blur outlined
-                                            auto-select-first dense :items="status" :item-text="item => item.descri"
-                                            :item-value="item => item.id" v-model="item.usuario.ativo_status_id">
-                                            <template v-slot:item="{ item }">
-                                                <span :class="corStatus(item.id)">
-                                                    {{ item.descri }}
-                                                </span>
-                                            </template>
-                                            <template v-slot:selection="{ item }">
-                                                <span :class="corStatus(item.id)">
-                                                    {{ item.descri }}
-                                                </span>
-                                            </template>
-                                        </v-autocomplete>
-                                    </v-col>
-                                    <v-col cols="12" sm="6" md="6">
-                                        <v-text-field type="password" :rules="[rules.required]" validate-on-blur
-                                            v-model="item.usuario.senha" label="Senha" outlined dense></v-text-field>
-                                    </v-col>
-                                    <v-col cols="12" sm="6" md="6">
-                                        <v-text-field type="password" :rules="[rules.required, rules.senhaDiferente]"
-                                            validate-on-blur v-model="senhaRepetida" label="Repetir senha" outlined
-                                            dense></v-text-field>
-                                    </v-col>
-                                </template>
-                            </template>
-                            <v-col cols="12" sm="12" md="12" class="border p-2" v-if="isEdit">
-                                <v-card elevation="1" class="pa-2">
-                                    <div class="w-100 d-flex align-center">
-                                        <strong>Perfil de acesso: </strong>
-                                        <v-btn @click.prevent="configUsuario(item.usuario)" small
-                                            class="ml-2"><v-icon>mdi-pencil</v-icon></v-btn>
-                                    </div><br>
-                                    <strong>Status: </strong> <span
-                                        :class="item.usuario.ativo_status_id == 1 ? 'green--text' : 'red--text'">{{
-                                            item.usuario.ativo_status_id == 1 ? ' Ativo' : ' Inativo'
-                                        }}</span><br>
-                                    <strong>Login: </strong> <span>{{ item.usuario.login ? item.usuario.login : ''
-                                    }}</span><br>
-                                </v-card>
+                            <v-col cols="12" sm="6" md="4">
+                                <v-text-field type="email" v-model="item.email" label="Email" outlined dense></v-text-field>
+                            </v-col>
+                            <v-col cols="12" sm="6" md="4">
+                                <v-autocomplete :rules="[]" label="Sexo" outlined auto-select-first dense
+                                    :items="listaSelecao.sexo" :item-text="item => item.descricao"
+                                    :item-value="item => item.id" v-model="item.sexo_id">
+                                </v-autocomplete>
                             </v-col>
 
-                            <!--         Cadastro de endereco          -->
-                            <template v-if="exibEndereco">
-                                <v-col cols="12" sm="6" md="3">
-                                    <v-text-field v-model="item.cep" label="CEP" outlined dense></v-text-field>
-                                </v-col>
-                                <v-col cols="12" sm="6" md="6">
-                                    <v-text-field v-model="item.endereco" label="Endereço" outlined dense></v-text-field>
-                                </v-col>
-                                <v-col cols="12" sm="6" md="6">
-                                    <v-text-field v-model="item.bairro" label="Bairro" outlined dense></v-text-field>
-                                </v-col>
-                                <v-col cols="12" sm="6" md="4">
-                                    <v-text-field v-model="item.cidade" label="Cidade" outlined dense></v-text-field>
-                                </v-col>
-                                <v-col cols="12" sm="6" md="2">
-                                    <v-text-field v-model="item.uf" label="UF" outlined dense></v-text-field>
-                                </v-col>
-                            </template>
-                            <!-- <pre>{{ item }}</pre> -->
+                            <v-col cols="12" sm="6" md="2">
+                                <v-text-field v-mask="['#####-###']" v-model="item.cep" label="CEP" outlined dense
+                                    @blur="consultaCep"></v-text-field>
+                            </v-col>
+                            <v-col cols="12" sm="6" md="8">
+                                <v-text-field v-model="item.rua" label="Rua" outlined dense></v-text-field>
+                            </v-col>
+                            <v-col cols="12" sm="6" md="2">
+                                <v-text-field ref="inputNum" v-model="item.num" label="Núm." outlined dense></v-text-field>
+                            </v-col>
+                            <v-col cols="12" sm="6" md="5">
+                                <v-text-field v-model="item.bairro" label="Bairro" outlined dense></v-text-field>
+                            </v-col>
+                            <v-col cols="12" sm="6" md="5">
+                                <v-text-field v-model="item.cidade" label="Cidade" outlined dense></v-text-field>
+                            </v-col>
+                            <v-col cols="12" sm="6" md="2">
+                                <v-text-field v-model="item.uf" label="UF" outlined dense></v-text-field>
+                            </v-col>
+
                         </v-row>
-                        <usuarioCadastro @close="exibCadUser = false" :isEditUser="isEditUser" @atualizaUser="atualizaUser"
-                            :open="exibCadUser" :item="usuario" />
+
                     </v-container>
                 </v-form>
             </v-card-text>
@@ -117,7 +70,6 @@
                 </v-btn>
                 <v-spacer></v-spacer>
             </v-card-actions>
-
         </v-card>
     </v-dialog>
 </template>
@@ -129,36 +81,14 @@ export default {
     props: ['item', 'isEdit', 'open'],
     data() {
         return {
+            menu1: false,
+            dataNasc: '1981-09-30',
             valid: true,
-            tituloPagina: 'Cadastro de Funcionários',
-            exibSenha: false,
-            exibExpand: false,
-            dialogUser: false,
-            exibEndereco: false,
-            exibUsuario: true,
-            exibCadUser: false,
-            endereco: {
-                cep: null,
-                rua: null,
-                num: null,
-                bairro: null,
-                cidade: null,
-                uf: null
-            },
-            usuario: {},
-            senhaRepetida: '',
-            isEditUser: false,
+            itemOld: { ...this.item },
             status: [
                 { id: 1, descri: "ATIVO" },
                 { id: 2, descri: "INATIVO" }
             ],
-            formErros: {
-                nome: null,
-                cpf: null,
-                telefone: null,
-                senha: null,
-                senhaDiferente: null,
-            },
             rules: {
                 required: value => !!value || 'Requerido!',
                 counter: value => value.length >= 6 || 'Min. de 6 dígitos!',
@@ -169,50 +99,39 @@ export default {
                 cpfValido: value => this.$cpfValido(value) || 'CPF inválido!',
                 senhaDiferente: value => this.comparaSenha(value) || 'Senha não confere! Repita a mesma senha.'
             },
+            listaSelecao: {
+                sexo: [
+                    { id: 1, descricao: "Masculino" },
+                    { id: 2, descricao: "Feminino" }
+                ]
+            }
 
         }
     },
     computed: {
+        computedDataNasc() {
+            moment.locale('pt-br')
+            console.log(this.item.dt_nasc);
+            return this.item.dt_nasc ? moment.utc(this.item.data_inicio).format('L') : ''
 
+        },
     },
     methods: {
-        copiaEmail() {
-            if (!this.item.usuario.login && this.item.email) {
-                this.item.usuario.login = this.item.email
-            }
-        },
-        formValido() {
-            this.formErros.nome = ''
-            this.formErros.cpf = ''
-            const campoVazio = 'Preencha este campo!'
-            const minCaractere = 'Prrencha com o min. de '
-            let qtdErros = 0
-            if (!this.item?.nome) {
-                this.formErros.nome = campoVazio
-                qtdErros++
-            }
-            if (this.item?.nome?.length < 6) {
-                this.formErros.nome = minCaractere + '6 caracteres'
-                qtdErros++
-            }
-            if (!this.item?.cpf) {
-                this.formErros.cpf = campoVazio
-                qtdErros++
-            }
 
-            if (qtdErros > 0) {
-                return false
+        async consultaCep() {
+            const result = await this.$buscaCep(this.item.cep)
+            if (result) {
+                this.item.rua = result?.logradouro || null
+                this.item.bairro = result?.bairro || null
+                this.item.cidade = result?.localidade || null
+                this.item.uf = result?.uf || null
+                this.$refs.inputNum.focus()
             } else {
-                return true
+                this.exibSnack('CEP inválido ou não encontrado!', 'error')
+                this.limparEndereco()
             }
-
         },
-        comparaSenha(senhaRepetida) {
-            if (this.item.usuario.senha !== senhaRepetida)
-                return false
 
-            return true
-        },
         corStatus(id) {
             if (id == 1) return 'green--text'
             if (id == 2) return 'red--text'
@@ -221,37 +140,43 @@ export default {
             if (!this.$refs.form.validate()) {
                 return
             }
-            // if (await !this.formValido()) {
-            //     return
-            // }
-            if (!this.isEdit) {
-                this.createItem(item)
+            if (this.foiAlterado()) {
+                if (!this.isEdit) {
+                    this.createItem(item)
+                } else {
+                    this.updateItem(item)
+                }
             } else {
-                this.updateItem(item)
+                this.$emit('close')
+                this.exibSnack('Registro salvo com sucesso!', 'success')
             }
 
+        },
+        foiAlterado() {
+            if (JSON.stringify(this.itemOld) === JSON.stringify(this.item))
+                return false
+            return true
         },
         async createItem(item) {
             try {
                 delete item.id
-                await this.$axios.$post(`/pessoa`, item,)
+                await this.$axios.$post(`/funcionario`, item,)
                 this.$emit('atualizarListagem')
                 this.$emit('close')
                 this.exibSnack('Registro salvo com sucesso!', 'success')
             } catch (error) {
-                this.exibSnack('Não foi possível salvar o registro! Verifique os dados e tente novamente', 'error')
+                this.exibSnack('Não foi possível salvar o registro! Verifique o nome ou cpf já foram cadastrados', 'red lighten-2')
                 console.log(error);
             }
         },
         async updateItem(item) {
             try {
-                delete item.usuario
-                await this.$axios.$put(`/pessoa/${item.id}`, item)
+                await this.$axios.$put(`/funcionario/${item.id}`, item)
                 this.$emit('atualizarListagem')
                 this.$emit('close')
                 this.exibSnack('Registro salvo com sucesso!', 'success')
             } catch (error) {
-                this.exibSnack('Não foi possível salvar o registro! Verifique os dados e tente novamente', 'error')
+                this.exibSnack('Não foi possível salvar o registro! Verifique os dados e tente novamente', 'red lighten-2')
                 console.log(error);
             }
         },
@@ -260,7 +185,7 @@ export default {
         },
         async deleteItem(item) {
             try {
-                await this.$axios.$delete(`/pessoa/${item.id}`)
+                await this.$axios.$delete(`/funcionario/${item.id}`)
                 this.$emit('atualizarListagem')
                 this.$emit('close')
                 this.exibSnack('Registro exluído com sucesso!', 'success')
@@ -270,18 +195,6 @@ export default {
             }
         },
 
-        configUsuario(user) {
-            if (user?.id) {
-                this.isEditUser = true
-            } else {
-                this.isEditUser = false
-            }
-            this.usuario = { ...user }
-            this.exibCadUser = true
-        },
-        atualizaUser(user) {
-            this.item.usuario = { ...user }
-        },
         exibSnack(texto, cor) {
             this.$emit('exibSnack', texto, cor)
         }
