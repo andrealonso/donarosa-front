@@ -20,23 +20,22 @@
                                     dense></v-text-field> -->
                             </v-col>
                             <v-col cols="12" sm="6" md="2">
-                                <v-autocomplete :rules="[rules.required]" label="Categoria" outlined auto-select-first dense
+                                <v-autocomplete :rules="[]" label="Categoria" outlined auto-select-first dense
                                     :items="listaSelecao.categoria" :item-text="item => item.descricao"
                                     :item-value="item => item.id" v-model="item.caixa_cate_id"
                                     append-outer-icon="mdi-pencil" @click:append-outer="editCategoria">
                                 </v-autocomplete>
                             </v-col>
                             <v-col cols="12" sm="6" md="2">
-                                <v-autocomplete :rules="[rules.required]" label="Forma de pag." outlined auto-select-first
-                                    dense :items="listaSelecao.formapag" :item-text="item => item.descricao"
+                                <v-autocomplete :rules="[]" label="Forma de pag." outlined auto-select-first dense
+                                    :items="listaSelecao.formapag" :item-text="item => item.descricao"
                                     :item-value="item => item.id" v-model="item.caixa_form_pag_id"
                                     append-outer-icon="mdi-pencil" @click:append-outer="editForma">
                                 </v-autocomplete>
                             </v-col>
 
                             <v-col cols="12" sm="6" md="9">
-                                <v-text-field :rules="[rules.required, rules.counter]" v-model="item.descricao"
-                                    label="Descrição" outlined dense></v-text-field>
+                                <v-text-field v-model="item.descricao" label="Descrição" outlined dense></v-text-field>
                             </v-col>
                         </v-row>
                     </v-container>
@@ -59,6 +58,7 @@
 </template>
 
 <script>
+import moment from 'moment'
 import { VMoney } from 'v-money'
 
 export default {
@@ -75,7 +75,9 @@ export default {
                 masked: false /* doesn't work with directive */
             },
             valor: this.item.valor,
+            menu1: false,
             valid: true,
+            tituloPagina: 'Cadastro de Proprietários',
             itemOld: { ...this.item },
             status: [
                 { id: 1, descri: "ATIVO" },
@@ -103,12 +105,14 @@ export default {
         },
         async salvarItem(item) {
             let vl = parseFloat(this.valor.replaceAll('.', '').replace(',', '.')).toFixed(2)
-            item.valor = vl
+            console.log(vl);
             if (item.caixa_operacao_id === 1 && vl < 0)
                 item.valor = vl * -1
             if (item.caixa_operacao_id === 2 && vl > 0)
                 item.valor = vl * -1
-
+            console.log(item.valor);
+            console.log(item);
+            return
             if (!this.$refs.form.validate()) {
                 return
             }
@@ -132,7 +136,7 @@ export default {
         async createItem(item) {
             try {
                 delete item.id
-                await this.$axios.$post(`/caixa`, item,)
+                await this.$axios.$post(`/cliente`, item,)
                 this.$emit('atualizarListagem')
                 this.$emit('close')
                 this.exibSnack('Registro salvo com sucesso!', 'success')
@@ -143,7 +147,7 @@ export default {
         },
         async updateItem(item) {
             try {
-                await this.$axios.$put(`/caixa/${item.id}`, item)
+                await this.$axios.$put(`/cliente/${item.id}`, item)
                 this.$emit('atualizarListagem')
                 this.$emit('close')
                 this.exibSnack('Registro salvo com sucesso!', 'success')
@@ -157,7 +161,7 @@ export default {
         },
         async deleteItem(item) {
             try {
-                await this.$axios.$delete(`/caixa/${item.id}`)
+                await this.$axios.$delete(`/cliente/${item.id}`)
                 this.$emit('atualizarListagem')
                 this.$emit('close')
                 this.exibSnack('Registro exluído com sucesso!', 'success')

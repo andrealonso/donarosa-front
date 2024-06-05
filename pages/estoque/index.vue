@@ -106,6 +106,7 @@ export default {
                 { text: 'Operação', value: 'operacao', align: 'center' },
                 { text: 'Qtd.', value: 'qtd', align: 'center' },
                 { text: 'Produto', value: 'produto', align: 'left' },
+                { text: 'Descrição', value: 'descricao', align: 'left' },
                 { text: 'Ações', value: 'actions', sortable: false, align: 'right' },
             ],
             exibLista: false,

@@ -5,11 +5,11 @@
                 <v-card-title>
                     <h4>Produtos</h4>
                     <v-spacer></v-spacer>
-                    <v-text-field dense outlined v-model="search" append-icon="mdi-magnify" label="Pesquisar" single-line
-                        hide-details>
+                    <v-text-field dense outlined v-model="search" append-icon="mdi-magnify" label="Pesquisar"
+                        single-line hide-details>
                     </v-text-field>
                 </v-card-title>
-                <v-data-table :headers="headers" :items="listagem" :search="search" dense mobile-breakpoint="400"
+                <v-data-table :headers="headers" :items="listagem" :search="search" dense mobile-breakpoint="0"
                     :footer-props="tableFooterPros">
                     <!-- eslint-disable-next-line -->
                     <template v-slot:item.actions="{ item }">
@@ -21,7 +21,7 @@
                     <!-- eslint-disable-next-line -->
                     <template v-slot:item.ativo_status.descricao="{ item }">
                         <div :class="['justfy-center', corStatus(item.ativo_status_id)]">{{ item.ativo_status.descricao
-                        }}</div>
+                            }}</div>
                     </template>
                     <!-- eslint-disable-next-line -->
                     <template v-slot:item.id="{ item }">
@@ -48,7 +48,8 @@
             @atualizarListagem="atualizarListagem" @exibSnack="exibSnack" :isEdit="isEdit" :item="payload" />
 
 
-        <DialogLoading v-if="isLoading" :is-loading="isLoading" :cor="'purple lighten-1'" :texto="'Atualizando dados...'" />
+        <DialogLoading v-if="isLoading" :is-loading="isLoading" :cor="'purple lighten-1'"
+            :texto="'Atualizando dados...'" />
         <DialogConfirmacao v-if="dlgConfirme" :dlg-confirme="dlgConfirme" @nao="dlgConfirme = false" @sim="excluirItem"
             :cor="'red--text lighten-2'" titulo="Exclusão de registro."
             :texto="'Tem certeza que deseja excluir este registro?'" />
@@ -59,120 +60,141 @@
 </template>
 
 <script>
-import { produtoModel } from '~/models/ProdutoModel'
-export default {
-    async asyncData({ $axios }) {
-        let listagem = []
-        try {
-            const resposta = await $axios.$get('/produtos')
-            if (!resposta?.erro) {
-                listagem = resposta.dados.registros
-            } else {
-                listagem = []
-            }
-            return { listagem }
-        } catch (error) {
-            console.log(error);
-            return { listagem }
-        }
-    },
-    name: 'produtos',
-
-    data() {
-        return {
-            itemSelect: null,
-            dlgConfirme: false,
-            exibCadastro: false,
-            isEdit: false,
-            isLoading: false,
-            openPreviewImg: true,
-            search: '',
-            headers: [
-                { text: 'Cód. Barras', value: 'cod_barras', align: 'left', margin: '12px' },
-                { text: 'Qtd', value: 'qtd_estoque', align: 'center' },
-                { text: 'Descrição', value: 'descricao', align: 'left' },
-                { text: 'Categoria', value: 'prod_categoria.descricao', align: 'center' },
-                { text: 'Cor', value: 'prod_cor.descricao', align: 'center' },
-                { text: 'Tamanho', value: 'prod_tamanho.descricao', align: 'center' },
-                { text: 'Compri.', value: 'prod_compri.descricao', align: 'center' },
-                { text: 'Fábrica', value: 'prod_fabrica.descricao', align: 'center' },
-                { text: 'Valor Aluguel', value: 'vl_aluguel', align: 'center' },
-                { text: 'Ações', value: 'actions', sortable: false, align: 'right' },
-            ],
-            exibLista: false,
-            payload: produtoModel(),
-            snack: {
-                active: false,
-                text: "teste",
-                timeout: 2000,
-                color: "primary"
-            },
-            tableFooterPros: {
-                itemsPerPageText: 'Itens por pág.',
-                itemsPerPageOptions: [50, 100, -1]
-            }
-        }
-    },
-    filters: {
-        zeroLeft(num) {
-            return (num).toLocaleString('en-US', {
-                minimumIntegerDigits: 6,
-                useGrouping: false
-            })
-        },
-        formatMoeda(valor) {
-            return valor.toLocaleString('pt-br', { minimumFractionDigits: 2 })
-        }
-    },
-    methods: {
-        corStatus(id) {
-            if (id == 1) return 'green--text'
-            if (id == 2) return 'red--text'
-        },
-        novoItem() {
-            this.payload = produtoModel()
-            this.isEdit = false
-            this.exibCadastro = true
-        },
-        exibSnack(texto, cor) {
-            this.snack.color = cor || ''
-            this.snack.text = texto || ''
-            this.snack.active = true
-        },
-        confirmeExclusao(item) {
-            this.itemSelect = item
-            this.dlgConfirme = true
-        },
-        async atualizarListagem() {
+    import { produtoModel } from '~/models/ProdutoModel'
+    export default {
+        async asyncData({ $axios }) {
+            let listagem = []
             try {
-                const resposta = await this.$axios.$get('/produtos')
+                const resposta = await $axios.$get('/produtos')
                 if (!resposta?.erro) {
-                    this.listagem = resposta.dados.registros
+                    listagem = resposta.dados.registros
                 } else {
-                    this.listagem = []
+                    listagem = []
                 }
-            } catch (error) {
-                this.listagem = []
-                console.log({ error });
-            }
-        },
-
-        async exibirItem(item) {
-            const { id } = item
-            try {
-                const payload = await this.$axios.$get(`/produto/${id}`)
-                this.payload = produtoModel(payload.dados.produto)
-                this.exibCadastro = true
-                this.isEdit = true
+                return { listagem }
             } catch (error) {
                 console.log(error);
+                return { listagem }
             }
         },
-        cancelar() {
-            this.payload = produtoModel()
-            this.exibCadastro = false
+        name: 'produtos',
+
+        data() {
+            return {
+                itemSelect: null,
+                dlgConfirme: false,
+                exibCadastro: false,
+                isEdit: false,
+                isLoading: false,
+                openPreviewImg: true,
+                search: '',
+                headers: [
+                    { text: 'Cód. Barras', value: 'cod_barras', align: 'left', margin: '12px' },
+                    { text: 'Qtd', value: 'qtd_estoque', align: 'center' },
+                    { text: 'Descrição', value: 'descricao', align: 'left' },
+                    { text: 'Categoria', value: 'prod_categoria.descricao', align: 'center' },
+                    { text: 'Cor', value: 'prod_cor.descricao', align: 'center' },
+                    { text: 'Tamanho', value: 'prod_tamanho.descricao', align: 'center' },
+                    { text: 'Compri.', value: 'prod_compri.descricao', align: 'center' },
+                    { text: 'Fábrica', value: 'prod_fabrica.descricao', align: 'center' },
+                    { text: 'Valor Aluguel', value: 'vl_aluguel', align: 'center' },
+                    { text: 'Ações', value: 'actions', sortable: false, align: 'right' },
+                ],
+                exibLista: false,
+                payload: produtoModel(),
+                snack: {
+                    active: false,
+                    text: "teste",
+                    timeout: 2000,
+                    color: "primary"
+                },
+                tableFooterPros: {
+                    itemsPerPageText: 'Itens por pág.',
+                    itemsPerPageOptions: [50, 100, -1]
+                }
+            }
+        },
+        filters: {
+            zeroLeft(num) {
+                if (num)
+                    return (num).toLocaleString('en-US', {
+                        minimumIntegerDigits: 6,
+                        useGrouping: false
+                    })
+            },
+            formatMoeda(valor) {
+                if (valor)
+                    return valor.toLocaleString('pt-br', { minimumFractionDigits: 2 })
+                return '0,00'
+            }
+        },
+        methods: {
+            corStatus(id) {
+                if (id == 1) return 'green--text'
+                if (id == 2) return 'red--text'
+            },
+            novoItem() {
+                this.payload = produtoModel()
+                this.isEdit = false
+                this.exibCadastro = true
+            },
+            exibSnack(texto, cor) {
+                this.snack.color = cor || ''
+                this.snack.text = texto || ''
+                this.snack.active = true
+            },
+            confirmeExclusao(item) {
+                this.itemSelect = item
+                this.dlgConfirme = true
+            },
+            async atualizarListagem() {
+                try {
+                    const resposta = await this.$axios.$get('/produtos')
+                    if (!resposta?.erro) {
+                        this.listagem = resposta.dados.registros
+                    } else {
+                        this.listagem = []
+                    }
+                } catch (error) {
+                    this.listagem = []
+                    console.log({ error });
+                }
+            },
+            numberToFront(valor) {
+                if (valor)
+                    return valor.toLocaleString('pt-br', { minimumFractionDigits: 2 })
+                return Number(0).toLocaleString('pt-br', { minimumFractionDigits: 2 })
+            },
+            async exibirItem(item) {
+                const { id } = item
+                try {
+                    const payload = await this.$axios.$get(`/produto/${id}`)
+                    this.payload = produtoModel(payload.dados.produto)
+                    this.payload.vl_custo = this.numberToFront(this.payload.vl_custo)
+                    this.payload.vl_aluguel = this.numberToFront(this.payload.vl_aluguel)
+                    this.payload.vl_venda = this.numberToFront(this.payload.vl_venda)
+                    this.exibCadastro = true
+                    this.isEdit = true
+                } catch (error) {
+                    console.log(error);
+                }
+            },
+            cancelar() {
+                this.payload = produtoModel()
+                this.exibCadastro = false
+            }
         }
     }
-}
 
 </script>
+<style>
+    tbody tr:nth-of-type(odd) {
+        background-color: rgba(0, 0, 0, 0.05);
+    }
+
+    tbody tr:hover {
+        background-color: rgb(248, 186, 210) !important;
+        cursor: default;
+
+    }
+</style>

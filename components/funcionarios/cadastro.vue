@@ -21,11 +21,12 @@
                                     dense></v-text-field>
                             </v-col>
                             <v-col cols="12" sm="6" md="4">
-                                <v-text-field :rules="[rules.required]" validate-on-blur v-model="item.tel" label="Telefone"
-                                    outlined dense v-mask="['(##)#####-####']"></v-text-field>
+                                <v-text-field :rules="[rules.required]" validate-on-blur v-model="item.tel"
+                                    label="Telefone" outlined dense v-mask="['(##)#####-####']"></v-text-field>
                             </v-col>
                             <v-col cols="12" sm="6" md="4">
-                                <v-text-field type="email" v-model="item.email" label="Email" outlined dense></v-text-field>
+                                <v-text-field type="email" v-model="item.email" label="Email" outlined
+                                    dense></v-text-field>
                             </v-col>
                             <v-col cols="12" sm="6" md="4">
                                 <v-autocomplete :rules="[]" label="Sexo" outlined auto-select-first dense
@@ -42,7 +43,8 @@
                                 <v-text-field v-model="item.rua" label="Rua" outlined dense></v-text-field>
                             </v-col>
                             <v-col cols="12" sm="6" md="2">
-                                <v-text-field ref="inputNum" v-model="item.num" label="Núm." outlined dense></v-text-field>
+                                <v-text-field ref="inputNum" v-model="item.num" label="Núm." outlined
+                                    dense></v-text-field>
                             </v-col>
                             <v-col cols="12" sm="6" md="5">
                                 <v-text-field v-model="item.bairro" label="Bairro" outlined dense></v-text-field>
@@ -75,140 +77,146 @@
 </template>
 
 <script>
-import moment from 'moment'
+    import moment from 'moment'
 
-export default {
-    props: ['item', 'isEdit', 'open'],
-    data() {
-        return {
-            menu1: false,
-            dataNasc: '1981-09-30',
-            valid: true,
-            itemOld: { ...this.item },
-            status: [
-                { id: 1, descri: "ATIVO" },
-                { id: 2, descri: "INATIVO" }
-            ],
-            rules: {
-                required: value => !!value || 'Requerido!',
-                counter: value => value.length >= 6 || 'Min. de 6 dígitos!',
-                email: value => {
-                    const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-                    return pattern.test(value) || 'Email inválido'
+    export default {
+        props: ['item', 'isEdit', 'open'],
+        data() {
+            return {
+                menu1: false,
+                dataNasc: '1981-09-30',
+                valid: true,
+                itemOld: { ...this.item },
+                status: [
+                    { id: 1, descri: "ATIVO" },
+                    { id: 2, descri: "INATIVO" }
+                ],
+                rules: {
+                    required: value => !!value || 'Requerido!',
+                    counter: value => value.length >= 6 || 'Min. de 6 dígitos!',
+                    email: value => {
+                        const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+                        return pattern.test(value) || 'Email inválido'
+                    },
+                    cpfValido: value => this.$cpfValido(value) || 'CPF inválido!',
+                    senhaDiferente: value => this.comparaSenha(value) || 'Senha não confere! Repita a mesma senha.'
                 },
-                cpfValido: value => this.$cpfValido(value) || 'CPF inválido!',
-                senhaDiferente: value => this.comparaSenha(value) || 'Senha não confere! Repita a mesma senha.'
-            },
-            listaSelecao: {
-                sexo: [
-                    { id: 1, descricao: "Masculino" },
-                    { id: 2, descricao: "Feminino" }
-                ]
-            }
-
-        }
-    },
-    computed: {
-        computedDataNasc() {
-            moment.locale('pt-br')
-            console.log(this.item.dt_nasc);
-            return this.item.dt_nasc ? moment.utc(this.item.data_inicio).format('L') : ''
-
-        },
-    },
-    methods: {
-
-        async consultaCep() {
-            const result = await this.$buscaCep(this.item.cep)
-            if (result) {
-                this.item.rua = result?.logradouro || null
-                this.item.bairro = result?.bairro || null
-                this.item.cidade = result?.localidade || null
-                this.item.uf = result?.uf || null
-                this.$refs.inputNum.focus()
-            } else {
-                this.exibSnack('CEP inválido ou não encontrado!', 'error')
-                this.limparEndereco()
-            }
-        },
-
-        corStatus(id) {
-            if (id == 1) return 'green--text'
-            if (id == 2) return 'red--text'
-        },
-        async salvarItem(item) {
-            if (!this.$refs.form.validate()) {
-                return
-            }
-            if (this.foiAlterado()) {
-                if (!this.isEdit) {
-                    this.createItem(item)
-                } else {
-                    this.updateItem(item)
+                listaSelecao: {
+                    sexo: [
+                        { id: 1, descricao: "Masculino" },
+                        { id: 2, descricao: "Feminino" }
+                    ]
                 }
-            } else {
-                this.$emit('close')
-                this.exibSnack('Registro salvo com sucesso!', 'success')
-            }
 
-        },
-        foiAlterado() {
-            if (JSON.stringify(this.itemOld) === JSON.stringify(this.item))
-                return false
-            return true
-        },
-        async createItem(item) {
-            try {
-                delete item.id
-                await this.$axios.$post(`/funcionario`, item,)
-                this.$emit('atualizarListagem')
-                this.$emit('close')
-                this.exibSnack('Registro salvo com sucesso!', 'success')
-            } catch (error) {
-                this.exibSnack('Não foi possível salvar o registro! Verifique o nome ou cpf já foram cadastrados', 'red lighten-2')
-                console.log(error);
             }
         },
-        async updateItem(item) {
-            try {
-                await this.$axios.$put(`/funcionario/${item.id}`, item)
-                this.$emit('atualizarListagem')
-                this.$emit('close')
-                this.exibSnack('Registro salvo com sucesso!', 'success')
-            } catch (error) {
-                this.exibSnack('Não foi possível salvar o registro! Verifique os dados e tente novamente', 'red lighten-2')
-                console.log(error);
-            }
-        },
-        cancelarRegistro() {
-            this.$emit('close')
-        },
-        async deleteItem(item) {
-            try {
-                await this.$axios.$delete(`/funcionario/${item.id}`)
-                this.$emit('atualizarListagem')
-                this.$emit('close')
-                this.exibSnack('Registro exluído com sucesso!', 'success')
-            } catch (error) {
-                this.exibSnack('Não foi possível excluir o registro!', 'error')
-                console.log(error);
-            }
-        },
+        computed: {
+            computedDataNasc() {
+                moment.locale('pt-br')
+                console.log(this.item.dt_nasc);
+                return this.item.dt_nasc ? moment.utc(this.item.data_inicio).format('L') : ''
 
-        exibSnack(texto, cor) {
-            this.$emit('exibSnack', texto, cor)
+            },
+        },
+        methods: {
+            testeCpfCnpj(num) {
+                if (num.length > 14) {
+                    return this.$cnpjValido(num)
+                } else {
+                    return this.$cpfValido(num)
+                }
+            },
+            async consultaCep() {
+                const result = await this.$buscaCep(this.item.cep)
+                if (result) {
+                    this.item.rua = result?.logradouro || null
+                    this.item.bairro = result?.bairro || null
+                    this.item.cidade = result?.localidade || null
+                    this.item.uf = result?.uf || null
+                    this.$refs.inputNum.focus()
+                } else {
+                    this.$alertaErro('CEP inválido ou não encontrado!')
+                    this.limparEndereco()
+                }
+            },
+
+            corStatus(id) {
+                if (id == 1) return 'green--text'
+                if (id == 2) return 'red--text'
+            },
+
+            async salvarItem() {
+                if (!this.$refs.form.validate()) {
+                    return
+                }
+                if (this.foiAlterado()) {
+                    if (!this.isEdit) {
+                        await this.createItem(this.item)
+                    } else {
+                        await this.updateItem(this.item)
+                    }
+                } else {
+                    this.$emit('close')
+                    this.$alertaSucesso()
+                }
+            },
+            foiAlterado() {
+                if (JSON.stringify(this.itemOld) === JSON.stringify(this.item))
+                    return false
+                return true
+            },
+            async createItem(item) {
+                try {
+                    delete item.id
+                    await this.$store.dispatch('funcionarios/create', item)
+                    await this.$store.dispatch('funcionarios/getListagem')
+                    this.$alertaSucesso()
+                    this.$emit('close')
+                } catch (error) {
+                    this.$alertaErro()
+                    console.log(error);
+                }
+            },
+            async updateItem(item) {
+                try {
+                    await this.$store.dispatch('funcionarios/update', item)
+                    await this.$store.dispatch('funcionarios/getListagem')
+                    this.$alertaSucesso()
+                    this.$emit('close')
+                } catch (error) {
+                    this.$alertaErro()
+                }
+            },
+            cancelarRegistro() {
+                this.$emit('close')
+            },
+            limparEndereco() {
+                this.item.rua = null
+                this.item.bairro = null
+                this.item.cidade = null
+                this.item.uf = null
+            },
+            async deleteItem(item) {
+                if (await this.$confirmaExclusao()) {
+                    try {
+                        await this.$store.dispatch('funcionarios/delete', item)
+                        this.$emit('close')
+                        this.$alertaSucesso('Registro excuído com sucesso!')
+                    } catch (error) {
+                        this.$alertaErro('Não foi possível excluir o registro!')
+                        console.log(error);
+                    }
+                }
+            },
         }
-
-
     }
-}
 </script>
 
 <style>
-.v-card--reveal {
-    bottom: 0;
-    opacity: 1 !important;
-    position: absolute;
-    width: 100%;
-}
+    .v-card--reveal {
+        bottom: 0;
+        opacity: 1 !important;
+        position: absolute;
+        width: 100%;
+    }
 </style>

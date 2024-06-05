@@ -6,8 +6,6 @@
                 <v-form ref="form" v-model="valid" lazy-validation>
                     <v-container>
                         <v-row>
-
-
                             <v-col cols="12" sm="6" md="4">
                                 <v-text-field :rules="[rules.required]" v-model="item.login" label="Login" outlined
                                     dense></v-text-field>
@@ -18,13 +16,13 @@
                                     :error-messages="formErros.senha" required></v-text-field>
                             </v-col>
                             <v-col cols="12" sm="4">
-                                <v-text-field type="password" v-model="senhaCompare" label="Repetir Senha" outlined dense
-                                    required :error-messages="formErros.senha"></v-text-field>
+                                <v-text-field type="password" v-model="senhaCompare" label="Repetir Senha" outlined
+                                    dense required :error-messages="formErros.senha"></v-text-field>
                             </v-col>
                             <v-col cols="12" sm="6" md="3">
                                 <v-autocomplete :rules="[rules.required]" label="Nível do usuário" outlined
                                     auto-select-first dense :items="listaNiveis" :item-text="item => item.descricao"
-                                    :item-value="item => item.id" v-model="item.user_nivel_id" @change="alterandoTipoUser">
+                                    :item-value="item => item.id" v-model="item.user_nivel_id">
                                 </v-autocomplete>
                             </v-col>
                             <v-col cols="12" sm="6" md="3">
@@ -61,184 +59,184 @@
 </template>
 
 <script>
-import moment from 'moment'
+    import moment from 'moment'
 
-export default {
-    props: ['item', 'isEdit', 'open', 'listaNiveis'],
-    data() {
-        return {
-            valid: true,
-            senhaCompare: null,
+    export default {
+        props: ['item', 'isEdit', 'open', 'listaNiveis'],
+        data() {
+            return {
+                valid: true,
+                senhaCompare: null,
 
-            status: [
-                { id: 1, descri: "ATIVO" },
-                { id: 2, descri: "INATIVO" }
-            ],
-            formErros: {
-                login: null,
-                senha: null,
-                nivel: null,
-                empresaReqerida: null
-            },
-            rules: {
-                required: value => !!value || 'Requerido!',
-                counter: value => value.length >= 6 || 'Min. de 6 dígitos!',
-                email: value => {
-                    const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-                    return pattern.test(value) || 'Email inválido'
+                status: [
+                    { id: 1, descri: "ATIVO" },
+                    { id: 2, descri: "INATIVO" }
+                ],
+                formErros: {
+                    login: null,
+                    senha: null,
+                    nivel: null,
+                    empresaReqerida: null
                 },
-                cpfValido: value => this.$cpfValido(value) || 'CPF inválido!',
-                senhaDiferente: value => this.checkSenha(value) || 'Senha não confere! Repita a mesma senha.'
-            },
+                rules: {
+                    required: value => !!value || 'Requerido!',
+                    counter: value => value.length >= 6 || 'Min. de 6 dígitos!',
+                    email: value => {
+                        const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+                        return pattern.test(value) || 'Email inválido'
+                    },
+                    cpfValido: value => this.$cpfValido(value) || 'CPF inválido!',
+                    senhaDiferente: value => this.checkSenha(value) || 'Senha não confere! Repita a mesma senha.'
+                },
 
-        }
-    },
-
-    methods: {
-        async configTipoUser(user) {
-            let lista = [
-                { id: 1, descri: "ADM ROOT" },
-                { id: 2, descri: "ADM INEA" },
-                { id: 3, descri: "ADM EMPRESA" },
-                { id: 4, descri: "FISCAL INEA" },
-                { id: 5, descri: "FUNCIONÁRIO" }
-            ]
-
-            // ADM ROOT
-            if (this.$store.state.user.user_tipo_id === 1) {
-                this.tiposUser = lista
-                return false
             }
+        },
 
-            // ADM FISCAL
-            if (this.$store.state.user.user_tipo_id === 2) {
-                this.tiposUser = [
+        methods: {
+            async configTipoUser(user) {
+                let lista = [
+                    { id: 1, descri: "ADM ROOT" },
                     { id: 2, descri: "ADM INEA" },
                     { id: 3, descri: "ADM EMPRESA" },
-                    { id: 4, descri: "FISCAL INEA" }
-                ]
-
-                return false
-            }
-
-            //ADM EMPRESAS
-            if (user.user_tipo_id === 3) {
-                this.tiposUser = [
-                    { id: 3, descri: "ADM EMPRESA" },
+                    { id: 4, descri: "FISCAL INEA" },
                     { id: 5, descri: "FUNCIONÁRIO" }
                 ]
-                this.desativarCampoEmpresa = true
-                this.item.empresas_id = user.empresas_id
 
-                return false
-            }
+                // ADM ROOT
+                if (this.$store.state.user.user_tipo_id === 1) {
+                    this.tiposUser = lista
+                    return false
+                }
+
+                // ADM FISCAL
+                if (this.$store.state.user.user_tipo_id === 2) {
+                    this.tiposUser = [
+                        { id: 2, descri: "ADM INEA" },
+                        { id: 3, descri: "ADM EMPRESA" },
+                        { id: 4, descri: "FISCAL INEA" }
+                    ]
+
+                    return false
+                }
+
+                //ADM EMPRESAS
+                if (user.user_tipo_id === 3) {
+                    this.tiposUser = [
+                        { id: 3, descri: "ADM EMPRESA" },
+                        { id: 5, descri: "FUNCIONÁRIO" }
+                    ]
+                    this.desativarCampoEmpresa = true
+                    this.item.empresas_id = user.empresas_id
+
+                    return false
+                }
 
 
 
-            return true
-        },
-        corStatus(id) {
-            if (id == 1) return 'green--text'
-            if (id == 2) return 'red--text'
-        },
-        formValido() {
-            const campoVazio = 'Preencha este campo!'
-            const minCaractere = 'Preencha com o min. de '
-            let qtdErros = null
-            this.formErros.senha = ''
-            return !qtdErros
+                return true
+            },
+            corStatus(id) {
+                if (id == 1) return 'green--text'
+                if (id == 2) return 'red--text'
+            },
+            formValido() {
+                const campoVazio = 'Preencha este campo!'
+                const minCaractere = 'Preencha com o min. de '
+                let qtdErros = null
+                this.formErros.senha = ''
+                return !qtdErros
 
-        },
-        checkSenha() {
-            let qtdErros = null
-            this.formErros.senha = ''
-            if (!this.item.senha && !this.isEdit) {
-                qtdErros++
-                this.formErros.senha = 'Cadastre uma senha!'
-                console.log(this.item?.senha?.length);
-            } else {
-                if (this.item.senha && this.item.senha.length < 6) {
+            },
+            checkSenha() {
+                let qtdErros = null
+                this.formErros.senha = ''
+                if (!this.item.senha && !this.isEdit) {
                     qtdErros++
-                    this.formErros.senha = 'Deve conter no mín. 6 caracteres!'
+                    this.formErros.senha = 'Cadastre uma senha!'
+                    console.log(this.item?.senha?.length);
                 } else {
-                    if (this.item.senha && this.item.senha !== this.senhaCompare) {
+                    if (this.item.senha && this.item.senha.length < 6) {
                         qtdErros++
-                        this.formErros.senha = 'As senha não conferem!'
+                        this.formErros.senha = 'Deve conter no mín. 6 caracteres!'
+                    } else {
+                        if (this.item.senha && this.item.senha !== this.senhaCompare) {
+                            qtdErros++
+                            this.formErros.senha = 'As senha não conferem!'
+                        }
                     }
                 }
-            }
 
-            return !qtdErros
-        },
+                return !qtdErros
+            },
 
-        async salvarItem(item) {
-            if (!this.checkSenha()) {
-                return
-            }
-            if (!this.$refs.form.validate()) {
-                return
-            }
+            async salvarItem(item) {
+                if (!this.checkSenha()) {
+                    return
+                }
+                if (!this.$refs.form.validate()) {
+                    return
+                }
 
-            if (!this.isEdit) {
-                this.createItem(item)
-            } else {
+                if (!this.isEdit) {
+                    this.createItem(item)
+                } else {
 
-                this.updateItem(item)
-            }
+                    this.updateItem(item)
+                }
 
-        },
-        async createItem(item) {
-            try {
-                delete item.id
-                const user = await this.$axios.$post(`/usuario`, item)
-                this.exibSnack('Registro salvo com sucesso!', 'success')
-                this.$emit('atualizar')
+            },
+            async createItem(item) {
+                try {
+                    delete item.id
+                    const user = await this.$axios.$post(`/usuario`, item)
+                    this.exibSnack('Registro salvo com sucesso!', 'success')
+                    this.$emit('atualizar')
+                    this.$emit('close')
+                } catch (erro) {
+                    this.exibSnack('Não foi possível salvar o registro! Verifique os dados e tente novamente', 'error')
+                    console.log(erro);
+                }
+            },
+            async updateItem(item) {
+                try {
+                    const user = await this.$axios.$put(`/usuario/${item.id}`, item)
+                    this.exibSnack('Registro salvo com sucesso!', 'success')
+                    this.$emit('atualizar')
+                    this.$emit('close')
+                } catch (erro) {
+                    this.exibSnack('Não foi possível salvar o registro! Verifique os dados estão corretos ou já poussua outro usuário com esses dados!', 'error')
+                    console.log(erro);
+                }
+            },
+            cancelarRegistro() {
                 this.$emit('close')
-            } catch (erro) {
-                this.exibSnack('Não foi possível salvar o registro! Verifique os dados e tente novamente', 'error')
-                console.log(erro);
-            }
-        },
-        async updateItem(item) {
-            try {
-                const user = await this.$axios.$put(`/usuario/${item.id}`, item)
-                this.exibSnack('Registro salvo com sucesso!', 'success')
-                this.$emit('atualizar')
-                this.$emit('close')
-            } catch (erro) {
-                this.exibSnack('Não foi possível salvar o registro! Verifique os dados estão corretos ou já poussua outro usuário com esses dados!', 'error')
-                console.log(erro);
-            }
-        },
-        cancelarRegistro() {
-            this.$emit('close')
-        },
-        async deleteItem(item) {
-            try {
-                await this.$axios.$delete(`/usuario/${item.id}`)
-                this.$emit('atualizar')
-                this.$emit('close')
-                this.exibSnack('Registro exluído com sucesso!', 'success')
-            } catch (erro) {
-                this.exibSnack('Não foi possível excluir o registro!', 'error')
-                console.log(erro);
-            }
-        },
-        exibSnack(texto, cor) {
-            this.$emit('exibSnack', texto, cor)
-        },
+            },
+            async deleteItem(item) {
+                try {
+                    await this.$axios.$delete(`/usuario/${item.id}`)
+                    this.$emit('atualizar')
+                    this.$emit('close')
+                    this.exibSnack('Registro exluído com sucesso!', 'success')
+                } catch (erro) {
+                    this.exibSnack('Não foi possível excluir o registro!', 'error')
+                    console.log(erro);
+                }
+            },
+            exibSnack(texto, cor) {
+                this.$emit('exibSnack', texto, cor)
+            },
 
 
 
+        }
     }
-}
 </script>
 
 <style>
-.v-card--reveal {
-    bottom: 0;
-    opacity: 1 !important;
-    position: absolute;
-    width: 100%;
-}
+    .v-card--reveal {
+        bottom: 0;
+        opacity: 1 !important;
+        position: absolute;
+        width: 100%;
+    }
 </style>
