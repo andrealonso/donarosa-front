@@ -20,31 +20,31 @@
                                     </v-col>
                                     <v-col cols="12" sm="12" md="3">
                                         <v-autocomplete :rules="[]" label="Categoria" outlined auto-select-first dense
-                                            :items="listaSelecao.prod_categoria" :item-text="item => item.descricao"
+                                            :items="listaAuxiliares.categorias" :item-text="item => item.descricao"
                                             :item-value="item => item.id" v-model="item.prod_categoria_id">
                                         </v-autocomplete>
                                     </v-col>
                                     <v-col cols="12" sm="12" md="3">
                                         <v-autocomplete :rules="[]" label="Cor" outlined auto-select-first dense
-                                            :items="listaSelecao.prod_cor" :item-text="item => item.descricao"
+                                            :items="listaAuxiliares.cores" :item-text="item => item.descricao"
                                             :item-value="item => item.id" v-model="item.prod_cor_id">
                                         </v-autocomplete>
                                     </v-col>
                                     <v-col cols="12" sm="12" md="3">
                                         <v-autocomplete :rules="[]" label="Fábrica" outlined auto-select-first dense
-                                            :items="listaSelecao.prod_fabrica" :item-text="item => item.descricao"
+                                            :items="listaAuxiliares.fabricas" :item-text="item => item.descricao"
                                             :item-value="item => item.id" v-model="item.prod_fabrica_id">
                                         </v-autocomplete>
                                     </v-col>
                                     <v-col cols="12" sm="12" md="3">
                                         <v-autocomplete :rules="[]" label="Tamanho" outlined auto-select-first dense
-                                            :items="listaSelecao.prod_tamanho" :item-text="item => item.descricao"
+                                            :items="listaAuxiliares.tamanhos" :item-text="item => item.descricao"
                                             :item-value="item => item.id" v-model="item.prod_tamanho_id">
                                         </v-autocomplete>
                                     </v-col>
                                     <v-col cols="12" sm="12" md="3">
                                         <v-autocomplete :rules="[]" label="Comprimento" outlined auto-select-first dense
-                                            :items="listaSelecao.prod_compri" :item-text="item => item.descricao"
+                                            :items="listaAuxiliares.comprimentos" :item-text="item => item.descricao"
                                             :item-value="item => item.id" v-model="item.prod_compri_id">
                                         </v-autocomplete>
                                     </v-col>
@@ -71,9 +71,6 @@
                                             <v-icon large @click="selectProd('s')">mdi-minus</v-icon>
                                         </v-btn>
                                     </v-col>
-
-
-
                                 </v-row>
                             </v-col>
                             <v-col cols="12" sm="12" md="4" class="d-flex justify-center">
@@ -129,10 +126,7 @@
 
     export default {
         directives: { money: VMoney },
-        props: ['item', 'isEdit', 'open'],
-        async beforeMount() {
-            await this.getListImgs()
-        },
+        props: ['item', 'isEdit', 'open', 'listaAuxiliares'],
         data() {
             return {
                 imgPadrao: 'http://localhost:3000/img/img-padrao.svg',
@@ -212,6 +206,9 @@
                     ],
                 }
             }
+        },
+        mounted() {
+            console.log('list', this.listaAuxiliares);
         },
         methods: {
 

@@ -45,7 +45,8 @@
             </v-card>
         </v-col>
         <produtosCadastro v-if="exibCadastro" :open="exibCadastro" @close="exibCadastro = false" @cancelar="cancelar"
-            @atualizarListagem="atualizarListagem" @exibSnack="exibSnack" :isEdit="isEdit" :item="payload" />
+            @atualizarListagem="atualizarListagem" :isEdit="isEdit" :item="payload"
+            :listaAuxiliares="listaAuxiliares" />
     </v-row>
 </template>
 
@@ -103,7 +104,8 @@
                 tableFooterPros: {
                     itemsPerPageText: 'Itens por pág.',
                     itemsPerPageOptions: [50, 100, -1]
-                }
+                },
+                listaAuxiliares: {}
             }
         },
         filters: {
@@ -130,19 +132,13 @@
                 if (id == 1) return 'green--text'
                 if (id == 2) return 'red--text'
             },
-            novoItem() {
+            async novoItem() {
+                const { dados } = await this.$axios.$get(`/produto/000`)
+                const { cores, tamanhos, comprimentos, fabricas, categorias } = dados
+                this.listaAuxiliares = { cores, tamanhos, comprimentos, fabricas, categorias }
                 this.payload = produtoModel()
                 this.isEdit = false
                 this.exibCadastro = true
-            },
-            exibSnack(texto, cor) {
-                this.snack.color = cor || ''
-                this.snack.text = texto || ''
-                this.snack.active = true
-            },
-            confirmeExclusao(item) {
-                this.itemSelect = item
-                this.dlgConfirme = true
             },
             async atualizarListagem() {
                 try {
@@ -165,11 +161,14 @@
             async exibirItem(item) {
                 const { id } = item
                 try {
-                    const payload = await this.$axios.$get(`/produto/${id}`)
-                    this.payload = produtoModel(payload.dados.produto)
+                    const { dados } = await this.$axios.$get(`/produto/${id}`)
+                    const { cores, tamanhos, comprimentos, fabricas, categorias } = dados
+                    this.listaAuxiliares = { cores, tamanhos, comprimentos, fabricas, categorias }
+                    this.payload = produtoModel(dados.produto)
                     this.payload.vl_custo = this.numberToFront(this.payload.vl_custo)
                     this.payload.vl_aluguel = this.numberToFront(this.payload.vl_aluguel)
                     this.payload.vl_venda = this.numberToFront(this.payload.vl_venda)
+
                     this.exibCadastro = true
                     this.isEdit = true
                 } catch (error) {
