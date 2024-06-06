@@ -7,6 +7,7 @@
         <img :src="file" alt="" class="src">
       </v-card>
     </v-col>
+    <!-- <PreviewImg :open="true" :itemImg="'http://localhost:3000/img/00001879.jpg'" @close="openPreviewImg = false" /> -->
   </v-row>
 </template>
 

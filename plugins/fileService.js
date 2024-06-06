@@ -22,7 +22,7 @@ export default (context, inject) => {
                         "Content-Type": "multipart/form-data",
                     }
                 })
-                return true
+                return dados
             } catch (error) {
                 console.log(error);
                 return false

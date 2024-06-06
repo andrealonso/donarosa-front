@@ -13,10 +13,10 @@
                     :footer-props="tableFooterPros">
                     <!-- eslint-disable-next-line -->
                     <template v-slot:item.actions="{ item }">
+
+                        <v-icon v-if="item.prod_imagem" @click="zoomImgClick(item)">mdi-eye</v-icon>
+
                         <v-icon @click.prevent="exibirItem(item)">mdi-pencil</v-icon>
-                        <!-- <span>
-                            <v-icon @click.prevent="confirmeExclusao(item)">mdi-delete</v-icon>
-                        </span> -->
                     </template>
                     <!-- eslint-disable-next-line -->
                     <template v-slot:item.ativo_status.descricao="{ item }">
@@ -41,21 +41,11 @@
                 <v-container>
                     <v-btn color="primary" elevation="2" outlined @click.prevent.stop="novoItem">Novo</v-btn>
                 </v-container>
+                <PreviewImg :open="openPreviewImg" :itemImg="itemImg" @close="openPreviewImg = false" />
             </v-card>
         </v-col>
-
         <produtosCadastro v-if="exibCadastro" :open="exibCadastro" @close="exibCadastro = false" @cancelar="cancelar"
             @atualizarListagem="atualizarListagem" @exibSnack="exibSnack" :isEdit="isEdit" :item="payload" />
-
-
-        <DialogLoading v-if="isLoading" :is-loading="isLoading" :cor="'purple lighten-1'"
-            :texto="'Atualizando dados...'" />
-        <DialogConfirmacao v-if="dlgConfirme" :dlg-confirme="dlgConfirme" @nao="dlgConfirme = false" @sim="excluirItem"
-            :cor="'red--text lighten-2'" titulo="Exclusão de registro."
-            :texto="'Tem certeza que deseja excluir este registro?'" />
-
-        <snackbar v-if="snack.active" :snack="snack" @close="snack.active = false" />
-        <!-- <PreviewImg :open="openPreviewImg" @close="openPreviewImg = false" /> -->
     </v-row>
 </template>
 
@@ -81,12 +71,14 @@
 
         data() {
             return {
+                localImgs: 'http://localhost:3000/img/',
+                openPreviewImg: false,
+                itemImg: {},
                 itemSelect: null,
                 dlgConfirme: false,
                 exibCadastro: false,
                 isEdit: false,
                 isLoading: false,
-                openPreviewImg: true,
                 search: '',
                 headers: [
                     { text: 'Cód. Barras', value: 'cod_barras', align: 'left', margin: '12px' },
@@ -129,6 +121,11 @@
             }
         },
         methods: {
+            zoomImgClick(item) {
+                if (!item.prod_imagem) return
+                this.itemImg.src = `${this.localImgs}${item?.prod_imagem}`
+                this.openPreviewImg = true
+            },
             corStatus(id) {
                 if (id == 1) return 'green--text'
                 if (id == 2) return 'red--text'
@@ -189,12 +186,13 @@
 </script>
 <style>
     tbody tr:nth-of-type(odd) {
-        background-color: rgba(0, 0, 0, 0.05);
+        background-color: rgba(192, 189, 189, 0.259);
     }
 
     tbody tr:hover {
-        background-color: rgb(248, 186, 210) !important;
+        background-color: rgb(245, 223, 231) !important;
         cursor: default;
 
     }
+
 </style>

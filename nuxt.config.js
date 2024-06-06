@@ -29,6 +29,7 @@ export default {
     "@/plugins/moment",
     "@/plugins/validacoes",
     "@/plugins/buscaCep",
+    "@/plugins/axios",
     "@/plugins/fileService",
     "@/plugins/alertas",
   ],

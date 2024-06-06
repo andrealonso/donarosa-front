@@ -60,55 +60,40 @@
                                         <v-text-field v-money="money" v-model="item.vl_aluguel" label="Valor Aluguel"
                                             outlined dense></v-text-field>
                                     </v-col>
-
-                                    <v-col cols="12">
-                                        <v-row>
-                                            <v-col cols="12" md="3" class="d-flex">
-                                                <v-text-field readonly type="number" hide-spin-buttons
-                                                    v-model="item.qtd_estoque" label="Qtd. Estoque" outlined
-                                                    dense></v-text-field>
-                                                <v-btn icon>
-                                                    <v-icon large @click="selectProd('e')">mdi-plus</v-icon>
-                                                </v-btn>
-                                                <v-btn icon>
-                                                    <v-icon large @click="selectProd('s')">mdi-minus</v-icon>
-                                                </v-btn>
-                                            </v-col>
-                                        </v-row>
+                                    <v-col cols="12" sm="12" md="3" class="d-flex">
+                                        <v-text-field readonly type="number" hide-spin-buttons
+                                            v-model="item.qtd_estoque" label="Qtd. Estoque" outlined
+                                            dense></v-text-field>
+                                        <v-btn icon>
+                                            <v-icon large @click="selectProd('e')">mdi-plus</v-icon>
+                                        </v-btn>
+                                        <v-btn icon>
+                                            <v-icon large @click="selectProd('s')">mdi-minus</v-icon>
+                                        </v-btn>
                                     </v-col>
 
-                                    <v-col cols="12" sm="12" md="3">
-                                        <v-file-input v-show="false" accept=".jpg,.jpeg,.png" hide-input id="fileInput"
-                                            @change="uploadImg">
-                                        </v-file-input>
-                                    </v-col>
+
+
                                 </v-row>
                             </v-col>
                             <v-col cols="12" sm="12" md="4" class="d-flex justify-center">
                                 <v-card class="pa-2" max-height="580">
-                                    <v-carousel hide-delimiters v-model="imgIndex">
-                                        <v-carousel-item v-for="(item, i) in listImgs" :key="i" class="text-center">
-                                            <v-card @click="zoomImgClick(i)" width="350" height="500"
-                                                class="d-flex flex-column" color="#424242">
-                                                <v-img class="img-zoom"
-                                                    :src="item.src ? item.src : 'http://localhost:3000/img/img-padrao.svg'"></v-img>
-
-                                                <v-sheet class="text-subtitle-2">{{
-        item.lado?.toUpperCase()
-    }}</v-sheet>
-                                            </v-card>
-                                        </v-carousel-item>
-                                    </v-carousel>
+                                    <v-card @click="zoomImgClick" width="350" height="500" color="#424242">
+                                        <v-img class="img-zoom" contain width="349" height="499"
+                                            :src="item?.prod_imagem ? `${localImgs}${item?.prod_imagem}` : `${imgPadrao}`"></v-img>
+                                    </v-card>
 
                                     <v-card-actions>
                                         <v-spacer></v-spacer>
-                                        <v-file-input v-show="false" id="file-input" v-model="file"
-                                            @change="uploadImg">convertCamposMoeda</v-file-input>
+                                        <v-file-input v-show="false" id="fileinput" v-model="file" accept="image/*"
+                                            @change="uploadImg"></v-file-input>
+
                                         <v-btn icon>
-                                            <v-icon large @click="alterarImg(imgIndex)">mdi-pencil</v-icon>
+                                            <v-icon large @click="alterarImg">mdi-pencil</v-icon>
                                         </v-btn>
+
                                         <v-btn icon>
-                                            <v-icon large @click="dlgConfImg">mdi-delete</v-icon>
+                                            <v-icon large @click="excluirImg">mdi-delete</v-icon>
                                         </v-btn>
                                     </v-card-actions>
                                 </v-card>
@@ -127,17 +112,12 @@
                 <v-btn color="error" elevation="2" outlined dense @click.prevent.stop="dlgConfItem"
                     :disabled="!isEdit">Excluir
                 </v-btn>
-
                 <v-spacer></v-spacer>
             </v-card-actions>
         </v-card>
         <estoqueCadastro v-if="exibCadEstoque" :open="exibCadEstoque" @close="exibCadEstoque = false"
             @atualizar="atualizaQtdEst" @exibSnack="exibSnack" :isEdit="isEdit" :item="payloadEstoque"
             :produto="prodSelecionado" />
-        <DialogConfirme v-if="confirmeExcImg" :dlgConfirme="dlgConfirme" :open="confirmeExcImg"
-            @nao="confirmeExcImg = false" @sim="excluirImg(imgIndex)" />
-        <DialogConfirme v-if="confirmeExcItem" :dlgConfirme="dlgConfirme" :open="confirmeExcItem"
-            @nao="confirmeExcItem = false" @sim="deleteItem(item)" />
         <PreviewImg :open="openPreviewImg" :itemImg="itemImg" @close="openPreviewImg = false" />
     </v-dialog>
 </template>
@@ -155,6 +135,7 @@
         },
         data() {
             return {
+                imgPadrao: 'http://localhost:3000/img/img-padrao.svg',
                 vlAluguel: null,
                 vlCusto: null,
                 vlVenda: null,
@@ -172,6 +153,7 @@
                 payloadEstoque: {},
                 prodSelecionado: {},
                 previewSRC: "https://placehold.co/600x400",
+                localImgs: 'http://localhost:3000/img/',
                 money: {
                     decimal: ',',
                     thousands: '.',
@@ -253,30 +235,16 @@
                 this.$emit('atualizarListagem')
             },
 
-            dlgConfImg() {
-                const file = this.listImgs[this.imgIndex]
-                if (!file.src) return
-                this.dlgConfirme.titulo = 'Exclusão de imagem'
-                this.dlgConfirme.texto = 'Tem certesa que deseja excluir esta imagem?'
-                this.dlgConfirme.cor = 'error'
-                this.confirmeExcImg = true
-            },
-            dlgConfItem() {
-                this.dlgConfirme.titulo = 'Exclusão de registro'
-                this.dlgConfirme.texto = 'Tem certesa que deseja excluir este registro?'
-                this.dlgConfirme.cor = 'error'
-                this.confirmeExcItem = true
-            },
 
             async uploadImg() {
-                const fileInfo = this.listImgs[this.imgIndex]
                 // this.previewSRC = URL.createObjectURL(this.file)
                 // URL.revokeObjectURL(this.file) //Liberar memoria
+                console.log('dados');
                 try {
-                    const fileInfo = this.listImgs[this.imgIndex]
-                    const success = await this.$uploadFile(this.item.id, fileInfo.lado, this.file)
-                    if (success) {
-                        this.getListImgs()
+                    const { dados } = await this.$uploadFile(this.item.id, 'frente', this.file)
+                    console.log(dados);
+                    if (dados) {
+                        this.item.prod_imagem = dados.prod_imagem
                         return
                     }
                     this.$alertaErro('Não foi possível salvar a imagem! Verifique o tamanho.')
@@ -285,17 +253,17 @@
                     console.log(error);
                 }
             },
-            alterarImg(index) {
+            alterarImg() {
                 // console.log('alterar', this.listImgs[index]);
-                const input = document.getElementById('file-input')
+                const input = document.getElementById('fileinput')
                 input.click()
             },
             async excluirImg(index) {
-                this.confirmeExcImg = false
-                const file = this.listImgs[index]
-                if (file.src) {
-                    const del = await this.$axios.$delete(`/file/img/${file.id}`)
-                    this.getListImgs()
+                if (this.item.prod_imagem) {
+                    if (await this.$confirmaExclusao('Tem certeza que deseja excluir a imagem do produto?', 'Exclusão da imagem')) {
+                        const del = await this.$axios.$delete(`/file/img/${this.item.id}`)
+                        this.item.prod_imagem = null
+                    }
                 }
             },
             async getListImgs() {
@@ -304,32 +272,14 @@
                     return
                 }
                 const list = await this.$axios.$get(`/files/imgs?produto_id=${this.item.id}`)
-                if (list) {
-                    this.ordenarListImg(list.dados)
-                }
+
             },
-            zoomImgClick(index) {
-                this.itemImg = this.listImgs[index]
-                if (!this.itemImg.src) return
+            zoomImgClick() {
+                if (!this.item.prod_imagem) return
+                this.itemImg.src = `${this.localImgs}${this.item?.prod_imagem}`
                 this.openPreviewImg = true
             },
-            ordenarListImg(list) {
-                let frente = list.filter(item => item.lado === 'frente')[0]
-                let verso = list.filter(item => item.lado === 'verso')[0]
 
-                if (frente) {
-                    frente.src = `http://localhost:3000/img/${frente.nome}`
-                } else {
-                    frente = { id: null, lado: 'frente', scr: null }
-                }
-
-                if (verso) {
-                    verso.src = `http://localhost:3000/img/${verso.nome}`
-                } else {
-                    verso = { id: null, lado: 'verso', scr: null }
-                }
-                this.listImgs = [frente, verso]
-            },
             corStatus(id) {
                 if (id == 1) return 'green--text'
                 if (id == 2) return 'red--text'

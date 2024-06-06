@@ -53,21 +53,9 @@
     import { funcionarioModel } from '~/models/FuncionarioModel'
     import { usuarioModel } from '~/models/UsuarioModel'
     export default {
-        // async asyncData({ $axios }) {
-        //     let listagem = []
-        //     try {
-        //         const resposta = await $axios.$get('/funcionarios')
-        //         if (!resposta?.erro) {
-        //             listagem = resposta.dados.registros
-        //         } else {
-        //             listagem = []
-        //         }
-        //         return { listagem }
-        //     } catch (error) {
-        //         console.log(error);
-        //         return { listagem }
-        //     }
-        // },
+        async asyncData({ $axios }) {
+
+        },
         name: 'funcionarios',
 
         data() {

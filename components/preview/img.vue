@@ -1,8 +1,9 @@
 <template>
     <v-dialog v-model="open" persistent fullscreen>
-        <v-card class="d-flex align-center black">
-            <v-img @click="clickImg" :src="itemImg.src ? itemImg.src : `http://localhost:3000/img/1058.jpg`"></v-img>
-        </v-card>
+        <v-sheet color="rgba(0, 0, 0, 0.7)">
+            <v-img @click="clickImg" contain height="100dvh"
+                :src="itemImg.src ? itemImg.src : `http://localhost:3000/img/1058.jpg`"></v-img>
+        </v-sheet>
     </v-dialog>
 </template>
 
@@ -17,4 +18,8 @@
     }
 </script>
 
-<style></style>
+<style>
+    .bg-card {
+        background-color: rgba(0, 0, 0, 0.745);
+    }
+</style>
