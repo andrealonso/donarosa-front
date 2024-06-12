@@ -102,11 +102,14 @@
             </v-card-text>
             <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="success" elevation="2" outlined dense @click.prevent.stop="salvarItem(item)">Salvar
+                <v-btn color="success" elevation="2" outlined dense @click.prevent.stop="salvarItem('')">Salvar
+                </v-btn>
+                <v-btn color="success" elevation="2" outlined dense @click.prevent.stop="salvarItem('sair')">Salvar e
+                    sair
                 </v-btn>
                 <v-btn color="secondary" elevation="2" outlined dense @click.prevent.stop="cancelarRegistro">
                     Cancelar</v-btn>
-                <v-btn color="error" elevation="2" outlined dense @click.prevent.stop="dlgConfItem"
+                <v-btn color="error" elevation="2" outlined dense @click.prevent.stop="deleteItem"
                     :disabled="!isEdit">Excluir
                 </v-btn>
                 <v-spacer></v-spacer>
@@ -129,6 +132,7 @@
         props: ['item', 'isEdit', 'open', 'listaAuxiliares'],
         data() {
             return {
+                salvarSair: false,
                 imgPadrao: 'http://localhost:3000/img/img-padrao.svg',
                 vlAluguel: null,
                 vlCusto: null,
@@ -169,50 +173,15 @@
                     required: value => !!value || 'Requerido!',
                     counter: value => value.length >= 6 || 'Min. de 6 dígitos!',
                 },
-                dlgConfirme: {
-                    titulo: '',
-                    texto: "",
-                    color: 'red--text lighten-2'
-                },
 
-                listaSelecao: {
-                    prod_cor: [
-                        { id: 1, descricao: "VERMELHO" },
-                        { id: 2, descricao: "PRETO" },
-                        { id: 3, descricao: "BRANCO" },
-                    ],
-                    prod_fabrica: [
-                        { id: 1, descricao: "Fabrica4" },
-                        { id: 2, descricao: "Fabrica2" },
-                        { id: 3, descricao: "Fabrica3" },
-                    ],
-                    prod_categoria: [
-                        { id: 1, descricao: "Vestidos" },
-                        { id: 2, descricao: "Ternos" },
-                        { id: 3, descricao: "Bolças" },
-                    ],
-                    prod_tamanho: [
-                        { id: 1, descricao: "PP" },
-                        { id: 2, descricao: "P" },
-                        { id: 3, descricao: "M" },
-                        { id: 4, descricao: "G" },
-                        { id: 5, descricao: "XG" },
-                        { id: 6, descricao: "GG" },
-                        { id: 7, descricao: "PS" },
-                    ],
-                    prod_compri: [
-                        { id: 1, descricao: "CURTO" },
-                        { id: 2, descricao: "LONGO" }
-                    ],
-                }
             }
         },
-        mounted() {
-            console.log('list', this.listaAuxiliares);
-        },
         methods: {
-
             async selectProd(operacao) {
+                if (!this.item?.id) {
+                    this.$alertaErro('Salve o registro antes de presseguir!')
+                    return
+                }
                 this.isLancEntrada = operacao === 'e' ? true : false
                 this.lancEstoque(this.item)
                 return
@@ -251,7 +220,10 @@
                 }
             },
             alterarImg() {
-                // console.log('alterar', this.listImgs[index]);
+                if (!this.item?.id) {
+                    this.$alertaErro('Salve o registro antes de presseguir!')
+                    return
+                }
                 const input = document.getElementById('fileinput')
                 input.click()
             },
@@ -286,13 +258,15 @@
                     return parseFloat(valor.replaceAll('.', '').replace(',', '.'))
                 return null
             },
-            convertCamposMoeda() {
-                // this.item.vl_custo = Number(this.item.vl_custo).toFixed(2)
-                // this.item.vl_aluguel = Number(this.item.vl_aluguel).toFixed(2)
-                // this.item.vl_venda = Number(this.item.vl_venda).toFixed(2)
-            },
 
-            async salvarItem() {
+
+            async salvarItem(sair) {
+                console.log(this.isEdit);
+                if (sair) {
+                    this.salvarSair = true
+                } else {
+                    this.salvarSair = false
+                }
                 const { vl_custo, vl_aluguel, vl_venda } = this.item
                 let item = { ...this.item }
                 item.vl_custo = this.numberToBack(vl_custo)
@@ -308,10 +282,11 @@
                         this.updateItem(item)
                     }
                 } else {
-                    this.$emit('close')
+                    if (sair) {
+                        this.$emit('close')
+                    }
                     this.$alertaSucesso()
                 }
-
             },
             foiAlterado() {
                 if (JSON.stringify(this.itemOld) === JSON.stringify(this.item))
@@ -320,10 +295,15 @@
             },
             async createItem(item) {
                 try {
+                    console.log('criar');
                     delete item.id
-                    await this.$axios.$post(`/produto`, item,)
+                    const { dados } = await this.$axios.$post(`/produto`, item,)
+                    console.log('result', dados);
+                    this.item.id = dados.id
+                    this.$emit('registroSalvo')
                     this.$emit('atualizarListagem')
-                    this.$emit('close')
+                    if (this.salvarSair)
+                        this.$emit('close')
                     this.$alertaSucesso()
                 } catch (error) {
                     this.$alertaErro()
@@ -332,9 +312,11 @@
             },
             async updateItem(item) {
                 try {
+                    console.log('updt');
                     await this.$axios.$put(`/produto/${item.id}`, item)
                     this.$emit('atualizarListagem')
-                    this.$emit('close')
+                    if (this.salvarSair)
+                        this.$emit('close')
                     this.$alertaSucesso()
                 } catch (error) {
                     this.$alertaErro()
@@ -344,15 +326,17 @@
             cancelarRegistro() {
                 this.$emit('close')
             },
-            async deleteItem(item) {
-                try {
-                    await this.$axios.$delete(`/produto/${item.id}`)
-                    this.$emit('atualizarListagem')
-                    this.$emit('close')
-                    this.$alertaSucesso('Registro excluído com sucesso')
-                } catch (error) {
-                    this.$alertaErro()
-                    console.log(error);
+            async deleteItem() {
+                if (await this.$confirmaExclusao()) {
+                    try {
+                        await this.$axios.$delete(`/produto/${this.item.id}`)
+                        this.$emit('atualizarListagem')
+                        this.$emit('close')
+                        this.$alertaSucesso('Registro excluído com sucesso')
+                    } catch (error) {
+                        this.$alertaErro()
+                        console.log(error);
+                    }
                 }
             },
 
@@ -362,13 +346,6 @@
 </script>
 
 <style>
-    .v-card--reveal {
-        bottom: 0;
-        opacity: 1 !important;
-        position: absolute;
-        width: 100%;
-    }
-
     .img-zoom:hover {
         cursor: zoom-in;
     }

@@ -45,8 +45,8 @@
             </v-card>
         </v-col>
         <produtosCadastro v-if="exibCadastro" :open="exibCadastro" @close="exibCadastro = false" @cancelar="cancelar"
-            @atualizarListagem="atualizarListagem" :isEdit="isEdit" :item="payload"
-            :listaAuxiliares="listaAuxiliares" />
+            @atualizarListagem="atualizarListagem" :isEdit="isEdit" :item="payload" :listaAuxiliares="listaAuxiliares"
+            @registroSalvo="isEdit = true" />
     </v-row>
 </template>
 
@@ -140,6 +140,23 @@
                 this.isEdit = false
                 this.exibCadastro = true
             },
+            async exibirItem(item) {
+                const { id } = item
+                try {
+                    const { dados } = await this.$axios.$get(`/produto/${id}`)
+                    const { cores, tamanhos, comprimentos, fabricas, categorias } = dados
+                    this.listaAuxiliares = { cores, tamanhos, comprimentos, fabricas, categorias }
+                    this.payload = produtoModel(dados.produto)
+                    this.payload.vl_custo = this.numberToFront(this.payload.vl_custo)
+                    this.payload.vl_aluguel = this.numberToFront(this.payload.vl_aluguel)
+                    this.payload.vl_venda = this.numberToFront(this.payload.vl_venda)
+
+                    this.exibCadastro = true
+                    this.isEdit = true
+                } catch (error) {
+                    console.log(error);
+                }
+            },
             async atualizarListagem() {
                 try {
                     const resposta = await this.$axios.$get('/produtos')
@@ -158,23 +175,7 @@
                     return valor.toLocaleString('pt-br', { minimumFractionDigits: 2 })
                 return Number(0).toLocaleString('pt-br', { minimumFractionDigits: 2 })
             },
-            async exibirItem(item) {
-                const { id } = item
-                try {
-                    const { dados } = await this.$axios.$get(`/produto/${id}`)
-                    const { cores, tamanhos, comprimentos, fabricas, categorias } = dados
-                    this.listaAuxiliares = { cores, tamanhos, comprimentos, fabricas, categorias }
-                    this.payload = produtoModel(dados.produto)
-                    this.payload.vl_custo = this.numberToFront(this.payload.vl_custo)
-                    this.payload.vl_aluguel = this.numberToFront(this.payload.vl_aluguel)
-                    this.payload.vl_venda = this.numberToFront(this.payload.vl_venda)
 
-                    this.exibCadastro = true
-                    this.isEdit = true
-                } catch (error) {
-                    console.log(error);
-                }
-            },
             cancelar() {
                 this.payload = produtoModel()
                 this.exibCadastro = false

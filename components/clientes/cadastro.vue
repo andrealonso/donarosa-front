@@ -217,11 +217,4 @@
     }
 </script>
 
-<style>
-    .v-card--reveal {
-        bottom: 0;
-        opacity: 1 !important;
-        position: absolute;
-        width: 100%;
-    }
-</style>
+<style></style>

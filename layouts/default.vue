@@ -208,6 +208,15 @@
             }
           )
         }
+        if ([1, 2, 3, 4, 5].some(item => item === user_tipo_id)) {
+          lista.push(
+            {
+              icon: 'mdi-calendar-month',
+              title: 'Eventos',
+              to: '/eventos'
+            }
+          )
+        }
 
         return lista
       },
