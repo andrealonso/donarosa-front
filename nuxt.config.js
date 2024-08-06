@@ -32,6 +32,8 @@ export default {
     "@/plugins/axios",
     "@/plugins/fileService",
     "@/plugins/alertas",
+    "@/plugins/configGeral",
+    "@/plugins/vuetify-money.js"
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components

@@ -131,8 +131,9 @@
                 try {
                     this.listagem = []
                     const resposta = await this.$axios.$get('/eventos')
+                    console.log(resposta);
                     if (!resposta?.erro) {
-                        this.listagem = resposta.dados.registros
+                        this.listagem = resposta.dados
                     } else {
                         this.listagem = []
                     }
@@ -142,12 +143,15 @@
                 }
             },
             async filtrar() {
-                console.log(this.filtroData);
+                if (!this.filtroData) {
+                    this.atualizarListagem()
+                    return
+                }
                 try {
                     this.listagem = []
                     const resposta = await this.$axios.$get(`/eventos?busca=${this.filtroData}`)
                     if (!resposta?.erro) {
-                        this.listagem = resposta.dados.registros
+                        this.listagem = resposta.dados
                     } else {
                         this.listagem = []
                     }

@@ -171,7 +171,7 @@
                 ],
                 rules: {
                     required: value => !!value || 'Requerido!',
-                    counter: value => value.length >= 6 || 'Min. de 6 dígitos!',
+                    counter: value => value?.length >= 6 || 'Min. de 6 dígitos!',
                 },
 
             }

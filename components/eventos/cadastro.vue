@@ -13,8 +13,8 @@
                                     outlined dense required validate-on-blur> </v-text-field>
                             </v-col>
                             <v-col cols="12" sm="12" md="6">
-                                <v-autocomplete :rules="[]" label="Tipo do evento" outlined auto-select-first dense
-                                    :items="listaTipoEvento" :item-text="item => item.descricao"
+                                <v-autocomplete :rules="[rules.required]" label="Tipo do evento" outlined
+                                    auto-select-first dense :items="listaTipoEvento" :item-text="item => item.descricao"
                                     :item-value="item => item.id" v-model="item.evento_tipo_id">
                                 </v-autocomplete>
                             </v-col>
@@ -52,7 +52,7 @@
 
     export default {
         directives: { money: VMoney },
-        props: ['item', 'isEdit', 'open', 'listaTipoEvento'],
+        props: ['item', 'isEdit', 'open', 'listaTipoEvento', 'dataEvento'],
         data() {
             return {
                 itemOld: { ...this.item },
@@ -63,6 +63,10 @@
                 },
 
             }
+        },
+        beforeMount() {
+            if (this.dataEvento)
+                this.item.data = this.dataEvento
         },
         methods: {
             async salvarItem(sair) {
@@ -94,11 +98,12 @@
                 try {
                     delete item.id
                     const { dados } = await this.$axios.$post(`/evento`, item,)
-                    this.$emit('atualizarListagem')
+                    console.log(dados);
+                    this.$emit('atualizarListagem', dados)
                     this.$emit('close')
                     this.$alertaSucesso()
                 } catch (error) {
-                    this.$alertaErro()
+                    this.$alertaErro('O evento já existe ou ocorreu um erro no servidor!')
                     console.log(error);
                 }
             },
