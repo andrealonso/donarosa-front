@@ -5507,9 +5507,9 @@ mute-stream@0.0.8:
   integrity sha512-nnbWWOkoWyUsTjKrhgD0dcz22mdkSnpYqbEjIm2nhwhuxlSkpywJmBo8h0ZqJdkp73mb90SssHkN4rsRaBAfAA==
 
 nan@^2.12.1:
-  version "2.19.0"
-  resolved "https://registry.yarnpkg.com/nan/-/nan-2.19.0.tgz#bb58122ad55a6c5bc973303908d5b16cfdd5a8c0"
-  integrity sha512-nO1xXxfh/RWNxfd/XPfbIfFk5vgLsAxUR9y5O0cHMJu/AW9U95JLXqthYHjEp+8gQ5p96K9jUp8nbVOxCdRbtw==
+  version "2.20.0"
+  resolved "https://registry.yarnpkg.com/nan/-/nan-2.20.0.tgz#08c5ea813dd54ed16e5bd6505bf42af4f7838ca3"
+  integrity sha512-bk3gXBZDGILuuo/6sKtr0DQmSThYHLtNCdSdXk9YkxD/jK6X2vmCyyXBBxyqZ4XcnzTyYEAThfX3DCEnLf6igw==
 
 nanoid@^3.1.23, nanoid@^3.3.6:
   version "3.3.6"
@@ -8371,7 +8371,7 @@ vuetify-loader@^1.7.3:
 
 vuetify-money@^1.2.0:
   version "1.2.0"
-  resolved "https://registry.yarnpkg.com/vuetify-money/-/vuetify-money-1.2.0.tgz#8a3e0367e0aa6a2223276fe1f24f06a052a76b9a"
+  resolved "https://registry.npmjs.org/vuetify-money/-/vuetify-money-1.2.0.tgz"
   integrity sha512-YVxO2bNE9HIgRZmF/d3ol4DJrJrbnptzrd72D5KpUxaSyjx0+8bTxUStGRYIHPoFsnUH/uCJOuZkGSVhbdqf3A==
 
 vuetify@^2.6, vuetify@^2.6.1:
