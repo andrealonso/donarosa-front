@@ -25,7 +25,7 @@
                   dense
                 ></v-text-field>
               </v-col>
-              <v-col cols="12" sm="6" md="2">
+              <v-col cols="12" sm="6" md="3">
                 <v-text-field
                   v-model="valor"
                   label="Valor"
@@ -36,7 +36,7 @@
                 <!-- <v-text-field type="number" v-model="item.valor" label="Valor" outlined hide-spin-buttons
                                     dense></v-text-field> -->
               </v-col>
-              <v-col cols="12" sm="6" md="2">
+              <v-col cols="12" sm="6" md="3">
                 <v-autocomplete
                   :rules="[rules.required]"
                   label="Categoria"
@@ -52,7 +52,7 @@
                 >
                 </v-autocomplete>
               </v-col>
-              <v-col cols="12" sm="6" md="2">
+              <v-col cols="12" sm="6" md="3">
                 <v-autocomplete
                   :rules="[rules.required]"
                   label="Forma de pag."

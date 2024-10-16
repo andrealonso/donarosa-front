@@ -208,9 +208,10 @@
                 console.log('dados');
                 try {
                     const { dados } = await this.$uploadFile(this.item.id, 'frente', this.file)
-                    console.log(dados);
+                    
                     if (dados) {
                         this.item.prod_imagem = dados.prod_imagem
+                        this.$emit('atualizarListagem')
                         return
                     }
                     this.$alertaErro('Não foi possível salvar a imagem! Verifique o tamanho.')
@@ -232,6 +233,7 @@
                     if (await this.$confirmaExclusao('Tem certeza que deseja excluir a imagem do produto?', 'Exclusão da imagem')) {
                         const del = await this.$axios.$delete(`/file/img/${this.item.id}`)
                         this.item.prod_imagem = null
+                        this.$emit('atualizarListagem')
                     }
                 }
             },

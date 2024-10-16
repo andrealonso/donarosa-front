@@ -106,7 +106,7 @@ export default {
         { text: "Código", value: "id", align: "left", margin: "12px" },
         { text: "Nome", value: "nome", align: "left" },
         { text: "Telefone", value: "tel", align: "center" },
-        { text: "Ações", value: "actions", sortable: false, align: "right" },
+        { text: "Ações", value: "actions", sortable: false, align: "right",class:'coluna-fixa' },
       ],
       exibLista: false,
       payload: clienteModel(),
@@ -172,4 +172,5 @@ export default {
   width: 100%;
   text-align: center;
 }
+
 </style>

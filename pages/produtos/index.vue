@@ -23,6 +23,7 @@
           dense
           mobile-breakpoint="0"
           :footer-props="tableFooterPros"
+          class="p-relativo"
         >
           <!-- eslint-disable-next-line -->
           <template v-slot:item.actions="{ item }">
@@ -32,15 +33,13 @@
 
             <v-icon @click.prevent="exibirItem(item)">mdi-pencil</v-icon>
           </template>
+          
           <!-- eslint-disable-next-line -->
-          <template v-slot:item.ativo_status.descricao="{ item }">
-            <div :class="['justfy-center', corStatus(item.ativo_status_id)]">
-              {{ item.ativo_status.descricao }}
-            </div>
-          </template>
-          <!-- eslint-disable-next-line -->
-          <template v-slot:item.id="{ item }">
-            {{ item.id | zeroLeft }}
+          <template v-slot:item.descricao="{ item,attrs}">
+            
+            <div class="link" @click="exibirItem(item)">{{
+              item.descricao
+            }}</div>
           </template>
           <!-- eslint-disable-next-line -->
           <template v-slot:item.vl_aluguel="{ item }">
@@ -132,7 +131,7 @@ export default {
         { text: "Compri.", value: "prod_compri.descricao", align: "center" },
         { text: "Fábrica", value: "prod_fabrica.descricao", align: "center" },
         { text: "Valor Aluguel", value: "vl_aluguel", align: "center" },
-        { text: "Ações", value: "actions", sortable: false, align: "right" },
+        { text: "Ações", value: "actions", sortable: false, align: "right",class:'coluna-fixa',cellClass:'coluna-fixa' },
       ],
       tableFooterPros: this.$configFooterTable(),
       exibLista: false,
@@ -242,4 +241,15 @@ tbody tr:hover {
   background-color: rgba(22, 21, 21, 0.243) !important;
   cursor: default;
 } */
+ table{
+  position: relative;
+  
+ }
+.coluna-fixa{
+  position: sticky;
+  /* width: 50px; */
+}
+.link{
+  cursor: pointer;
+}
 </style>

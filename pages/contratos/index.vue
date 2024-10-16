@@ -52,9 +52,9 @@
           </template>
           <!-- eslint-disable-next-line -->
           <template v-slot:item.id="{ item }">
-            <a @click.prevent.stop="exibirItem(item)">{{
+            <div class="link" @click.prevent.stop="exibirItem(item)">{{
               item.id | zeroLeft
-            }}</a>
+            }}</div>
           </template>
           <!-- eslint-disable-next-line -->
           <template v-slot:item.created_at="{ item }">
@@ -250,4 +250,7 @@ export default {
 };
 </script>
 <style>
+.link{
+  cursor: pointer;
+}
 </style>
