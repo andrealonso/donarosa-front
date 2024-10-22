@@ -17,31 +17,13 @@
                     <v-col cols="12">
                       <v-row>
                         <v-col cols="4" sm="4" md="2">
-                          <v-text-field
-                            readonly
-                            type="number"
-                            hide-spin-buttons
-                            v-model="item.id"
-                            label="Número do Contrato"
-                            outlined
-                            dense
-                            required
-                          ></v-text-field>
+                          <v-text-field readonly type="number" hide-spin-buttons v-model="item.id"
+                            label="Número do Contrato" outlined dense required></v-text-field>
                         </v-col>
                         <v-col cols="8" sm="4" md="3">
-                          <v-autocomplete
-                            hide-no-data
-                            :rules="[]"
-                            label="Status"
-                            outlined
-                            auto-select-first
-                            dense
-                            hide-selected
-                            :items="listaStatus"
-                            :item-text="(item) => item.descricao"
-                            :item-value="(item) => item.id"
-                            v-model="item.contrato_status_id"
-                          >
+                          <v-autocomplete hide-no-data :rules="[]" label="Status" outlined auto-select-first dense
+                            hide-selected :items="listaStatus" :item-text="(item) => item.descricao"
+                            :item-value="(item) => item.id" v-model="item.contrato_status_id">
                           </v-autocomplete>
                         </v-col>
                         <!-- <v-col>
@@ -54,64 +36,31 @@
                               </v-btn>
                             </template>
 
-                            <v-list>
-                              <v-list-item
-                                v-for="(item, i) in listaStatus"
-                                :key="i"
-                                link
-                              >
-                                <v-list-item-title
-                                  @click="alterarStatus(item.id)"
-                                  >{{ item.descricao }}</v-list-item-title
-                                >
-                              </v-list-item>
-                            </v-list>
-                          </v-menu>
-                        </v-col> -->
+<v-list>
+  <v-list-item v-for="(item, i) in listaStatus" :key="i" link>
+    <v-list-item-title @click="alterarStatus(item.id)">{{ item.descricao }}</v-list-item-title>
+  </v-list-item>
+</v-list>
+</v-menu>
+</v-col> -->
                       </v-row>
                     </v-col>
                     <v-col cols="12" sm="12" md="5">
-                      <v-autocomplete
-                        :rules="[rules.required]"
-                        label="Cliente"
-                        outlined
-                        auto-select-first
-                        dense
-                        :items="listaClientes"
-                        :item-text="(item) => item.nome"
-                        :item-value="(item) => item.id"
-                        v-model="item.cliente_id"
-                      >
+                      <v-autocomplete :rules="[rules.required]" label="Cliente" outlined auto-select-first dense
+                        :items="listaClientes" :item-text="(item) => item.nome" :item-value="(item) => item.id"
+                        v-model="item.cliente_id">
                       </v-autocomplete>
                     </v-col>
                     <v-col cols="12" sm="12" md="3">
-                      <v-text-field
-                        @change="alterarDtEvento"
-                        type="date"
-                        v-model="item.dt_evento"
-                        label="Data do evento"
-                        outlined
-                        dense
-                        validate-on-blur
-                      ></v-text-field>
+                      <v-text-field @change="alterarDtEvento" type="date" v-model="item.dt_evento"
+                        label="Data do evento" outlined dense validate-on-blur></v-text-field>
                     </v-col>
                     <v-col cols="12" sm="12" md="4">
                       <div class="d-flex">
-                        <v-autocomplete
-                          hide-no-data
-                          :rules="[]"
-                          label="Evento"
-                          outlined
-                          dense
-                          :items="listaEventos"
-                          :item-text="(item) => item.descricao"
-                          :item-value="(item) => item.id"
-                          v-model="item.evento_id"
-                          append-outer-icon="mdi-plus"
-                          @click:append-outer="novoEvento"
-                          :search-input.sync="search"
-                          clearable
-                        >
+                        <v-autocomplete hide-no-data :rules="[]" label="Evento" outlined dense :items="listaEventos"
+                          :item-text="(item) => item.descricao" :item-value="(item) => item.id" v-model="item.evento_id"
+                          append-outer-icon="mdi-plus" @click:append-outer="novoEvento" :search-input.sync="search"
+                          clearable>
                         </v-autocomplete>
                         <!-- <v-btn icon color="primary">
                                         <v-icon large @click="selectProd('e')">mdi-plus</v-icon>
@@ -119,14 +68,7 @@
                       </div>
                     </v-col>
                     <v-col cols="12">
-                      <v-textarea
-                        no-resize
-                        rows="3"
-                        outlined
-                        dense
-                        v-model="item.obs"
-                        label="Obsevações"
-                      ></v-textarea>
+                      <v-textarea no-resize rows="3" outlined dense v-model="item.obs" label="Obsevações"></v-textarea>
                     </v-col>
                   </v-row>
                 </v-container>
@@ -138,113 +80,43 @@
               <v-container>
                 <v-row dense>
                   <v-col cols="12" sm="12" md="4" class="d-flex">
-                    <v-text-field
-                      type="date"
-                      :rules="[rules.required]"
-                      v-model="item.dt_prova"
-                      label="Prova data/hora "
-                      outlined
-                      dense
-                      required
-                      validate-on-blur
-                    ></v-text-field>
-                    <v-text-field
-                      type="time"
-                      :rules="[rules.required]"
-                      v-model="item.hr_prova"
-                      label=""
-                      outlined
-                      dense
-                      required
-                      validate-on-blur
-                      :append-outer-icon="
-                        item.contrato_status_id >= 3
-                          ? 'mdi-checkbox-marked-outline'
-                          : 'mdi-checkbox-blank-outline'
-                      "
-                      @click:append-outer="alterarStatus(3)"
-                    ></v-text-field>
+                    <v-text-field type="date" :rules="[rules.required]" v-model="item.dt_prova" label="Prova data/hora "
+                      outlined dense required validate-on-blur></v-text-field>
+                    <v-text-field type="time" :rules="[rules.required]" v-model="item.hr_prova" label="" outlined dense
+                      required validate-on-blur :append-outer-icon="item.contrato_status_id >= 3
+                        ? 'mdi-checkbox-marked-outline'
+                        : 'mdi-checkbox-blank-outline'
+                        " @click:append-outer="alterarStatus(3)"></v-text-field>
                   </v-col>
                   <v-col cols="12" sm="12" md="4" class="d-flex">
-                    <v-text-field
-                      type="date"
-                      :rules="[rules.required]"
-                      v-model="item.dt_saida"
-                      label="Retirada data/hora "
-                      outlined
-                      dense
-                      required
-                      validate-on-blur
-                    ></v-text-field>
-                    <v-text-field
-                      type="time"
-                      :rules="[rules.required]"
-                      v-model="item.hr_saida"
-                      label=""
-                      outlined
-                      dense
-                      required
-                      validate-on-blur
-                      :append-outer-icon="
-                        item.contrato_status_id >= 4
-                          ? 'mdi-checkbox-marked-outline'
-                          : 'mdi-checkbox-blank-outline'
-                      "
-                      @click:append-outer="alterarStatus(4)"
-                    ></v-text-field>
+                    <v-text-field type="date" :rules="[rules.required]" v-model="item.dt_saida"
+                      label="Retirada data/hora " outlined dense required validate-on-blur></v-text-field>
+                    <v-text-field type="time" :rules="[rules.required]" v-model="item.hr_saida" label="" outlined dense
+                      required validate-on-blur :append-outer-icon="item.contrato_status_id >= 4
+                        ? 'mdi-checkbox-marked-outline'
+                        : 'mdi-checkbox-blank-outline'
+                        " @click:append-outer="alterarStatus(4)"></v-text-field>
                   </v-col>
                   <v-col cols="12" sm="12" md="3" class="d-flex">
-                    <v-text-field
-                      type="date"
-                      :rules="[rules.required]"
-                      v-model="item.dt_devol"
-                      label="Devolução data "
-                      outlined
-                      dense
-                      required
-                      validate-on-blur
-                      :append-outer-icon="
-                        item.contrato_status_id >= 5
-                          ? 'mdi-checkbox-marked-outline'
-                          : 'mdi-checkbox-blank-outline'
-                      "
-                      @click:append-outer="alterarStatus(5)"
-                    ></v-text-field>
+                    <v-text-field type="date" :rules="[rules.required]" v-model="item.dt_devol" label="Devolução data "
+                      outlined dense required validate-on-blur :append-outer-icon="item.contrato_status_id >= 5
+                        ? 'mdi-checkbox-marked-outline'
+                        : 'mdi-checkbox-blank-outline'
+                        " @click:append-outer="alterarStatus(5)"></v-text-field>
                   </v-col>
                   <v-col cols="12" md="6">
-                    <v-autocomplete
-                      label="Adicionar produtos"
-                      outlined
-                      auto-select-first
-                      dense
-                      :items="listaProdutos"
-                      :item-text="(prod) => prod.descricao"
-                      v-model="produtoSelecionado"
-                      :item-value="(prod) => prod"
-                      clearable
-                    >
+                    <v-autocomplete label="Adicionar produtos" outlined auto-select-first dense :items="listaProdutos"
+                      :item-text="(prod) => prod.descricao" v-model="produtoSelecionado" :item-value="(prod) => prod"
+                      clearable>
                     </v-autocomplete>
                   </v-col>
                   <v-col cols="4" md="2">
-                    <v-text-field
-                      type="number"
-                      v-model="itemCont.qtd"
-                      label="Qtd"
-                      hide-spin-buttons
-                      outlined
-                      dense
-                      required
-                    ></v-text-field>
+                    <v-text-field type="number" v-model="itemCont.qtd" label="Qtd" hide-spin-buttons outlined dense
+                      required></v-text-field>
                   </v-col>
                   <v-col cols="8" md="4">
                     <div class="d-flex">
-                      <vMoney
-                        v-model="itemCont.valor"
-                        label="Valor"
-                        :options="options"
-                        dense
-                        outlined
-                      />
+                      <vMoney v-model="itemCont.valor" label="Valor" :options="options" dense outlined />
                       <v-sheet width="10"></v-sheet>
                       <v-btn icon color="primary">
                         <v-icon large @click="addItem">mdi-plus</v-icon>
@@ -253,18 +125,11 @@
                   </v-col>
                   <v-col cols="12">
                     <v-card outlined min-height="300">
-                      <v-data-table
-                        hide-default-footer
-                        :headers="headers"
-                        :items="item.itens"
-                        dense
-                        mobile-breakpoint="400"
-                      >
+                      <v-data-table hide-default-footer :headers="headers" :items="item.itens" dense
+                        mobile-breakpoint="400">
                         <!-- eslint-disable-next-line -->
                         <template v-slot:item.actions="{ item, index }">
-                          <v-icon @click.prevent="delItem(item, index)"
-                            >mdi-delete</v-icon
-                          >
+                          <v-icon @click.prevent="delItem(item, index)">mdi-delete</v-icon>
                           <!-- <v-icon @click.prevent="exibirItem(item)">mdi-pencil</v-icon> -->
                         </template>
 
@@ -301,59 +166,47 @@
           <v-tab-item value="valores">
             <v-sheet :min-height="altura">
               <v-container>
-                <v-row dense>
-                  <v-col cols="12" sm="6" md="2">
-                    <v-text-field
-                      readonly
-                      type="date"
-                      v-model="itemPagamento.data"
-                      label="Data do pag. "
-                      outlined
-                      dense
-                    ></v-text-field>
+                <v-row dense class="flex justify-center">
+                  <v-col cols="4" sm="12" md="3">
+                    <vMoney @blur="calcValores" v-model="item.vl_total" label="Valor da total" :options="options" dense
+                      outlined />
                   </v-col>
-                  <v-col cols="12" sm="6" md="4">
-                    <v-autocomplete
-                      label="Forma de pagamento"
-                      outlined
-                      auto-select-first
-                      dense
-                      :items="listaFormPag"
-                      :item-text="(formpag) => formpag.descricao"
-                      v-model="itemPagamento.caixa_form_pag_id"
-                      :item-value="(formpag) => formpag.id"
-                    >
+                  <v-col cols="4" sm="12" md="3">
+                    <vMoney @blur="calcValores" v-model="item.vl_sinal" label="Valor pago" :options="options" dense
+                      readonly outlined />
+                  </v-col>
+                  <v-col cols="4" sm="12" md="3">
+                    <vMoney @blur="calcValores" readonly v-model="item.vl_rest" label="Valor restante"
+                      :options="options" dense outlined />
+                  </v-col>
+                </v-row>
+                <v-row dense class="flex justify-center">
+                  <v-col cols="12" sm="6" md="2">
+                    <v-text-field readonly type="date" v-model="itemPagamento.data" label="Data do pag. " outlined
+                      dense></v-text-field>
+                  </v-col>
+                  <v-col cols="12" sm="6" md="3">
+                    <v-autocomplete label="Forma de pagamento" outlined auto-select-first dense :items="listaFormPag"
+                      :item-text="(formpag) => formpag.descricao" v-model="itemPagamento.caixa_form_pag_id"
+                      :item-value="(formpag) => formpag.id">
                     </v-autocomplete>
                   </v-col>
-                  <v-col cols="10" sm="6" md="4">
-                    <vMoney
-                      v-model="itemPagamento.valor"
-                      label="Valor"
-                      :options="options"
-                      dense
-                      outlined
-                    />
+                  <v-col cols="10" sm="6" md="3">
+                    <vMoney v-model="itemPagamento.valor" label="Valor" :options="options" dense outlined />
                   </v-col>
-                  <v-col cols="2" sm="6" md="2">
+                  <v-col cols="2" sm="6" md="1">
                     <v-btn icon color="primary">
                       <v-icon large @click="addPag">mdi-plus</v-icon>
                     </v-btn>
                   </v-col>
                   <!-- Tabela Caixa -->
-                  <v-col cols="12">
+                  <v-col cols="12" md="9">
                     <v-card outlined min-height="300">
-                      <v-data-table
-                        hide-default-footer
-                        :headers="headersCaixa"
-                        :items="this.item.caixa_lanc"
-                        dense
-                        mobile-breakpoint="0"
-                      >
+                      <v-data-table hide-default-footer :headers="headersCaixa" :items="this.item.caixa_lanc" dense
+                        mobile-breakpoint="0">
                         <!-- eslint-disable-next-line -->
                         <template v-slot:item.actions="{ item, index }">
-                          <v-icon @click.prevent="delPag(item, index)"
-                            >mdi-delete</v-icon
-                          >
+                          <v-icon @click.prevent="delPag(item, index)">mdi-delete</v-icon>
                         </template>
 
                         <!-- eslint-disable-next-line -->
@@ -368,38 +221,7 @@
                     </v-card>
                   </v-col>
 
-                  <v-col cols="4" sm="12" md="3">
-                    <vMoney
-                      @blur="calcValores"
-                      v-model="item.vl_total"
-                      label="Valor da total"
-                      :options="options"
-                      dense
-                      outlined
-                    />
-                  </v-col>
-                  <v-col cols="4" sm="12" md="3">
-                    <vMoney
-                      @blur="calcValores"
-                      v-model="item.vl_sinal"
-                      label="Valor pago"
-                      :options="options"
-                      dense
-                      readonly
-                      outlined
-                    />
-                  </v-col>
-                  <v-col cols="4" sm="12" md="3">
-                    <vMoney
-                      @blur="calcValores"
-                      readonly
-                      v-model="item.vl_rest"
-                      label="Valor restante"
-                      :options="options"
-                      dense
-                      outlined
-                    />
-                  </v-col>
+
                 </v-row>
               </v-container>
             </v-sheet>
@@ -408,55 +230,22 @@
       </v-card-text>
       <v-card-actions class="overflow-auto">
         <v-spacer></v-spacer>
-        <v-btn
-          color="success"
-          elevation="2"
-          outlined
-          dense
-          @click.prevent.stop="salvar"
-          >Salvar
+        <v-btn color="success" elevation="2" outlined dense @click.prevent.stop="salvar">Salvar
         </v-btn>
-        <v-btn
-          color="success"
-          elevation="2"
-          outlined
-          dense
-          @click.prevent.stop="salvarSair"
-          >Salvar e sair
+        <v-btn color="success" elevation="2" outlined dense @click.prevent.stop="salvarSair">Salvar e sair
         </v-btn>
-        <v-btn
-          color="secondary"
-          elevation="2"
-          outlined
-          dense
-          @click.prevent.stop="cancelarRegistro"
-        >
-          Cancelar</v-btn
-        >
-        <v-btn
-          color="error"
-          elevation="2"
-          outlined
-          dense
-          @click.prevent.stop="deleteItem(item)"
-          :disabled="!isEdit"
-          >Excluir
+        <v-btn color="secondary" elevation="2" outlined dense @click.prevent.stop="cancelarRegistro">
+          Cancelar</v-btn>
+        <v-btn color="error" elevation="2" outlined dense @click.prevent.stop="deleteItem(item)"
+          :disabled="!isEdit">Excluir
         </v-btn>
         <v-spacer></v-spacer>
       </v-card-actions>
     </v-card>
 
-    <eventosCadastro
-      v-if="exibCadEvento"
-      :open="exibCadEvento"
-      @close="exibCadEvento = false"
-      @cancelar="exibCadEvento = false"
-      @atualizarListagem="getListaEventos"
-      :isEdit="isEditEvento"
-      :item="payloadEvento"
-      :listaTipoEvento="listaTipoEvento"
-      :dataEvento="item.dt_evento"
-    />
+    <eventosCadastro v-if="exibCadEvento" :open="exibCadEvento" @close="exibCadEvento = false"
+      @cancelar="exibCadEvento = false" @atualizarListagem="getListaEventos" :isEdit="isEditEvento"
+      :item="payloadEvento" :listaTipoEvento="listaTipoEvento" :dataEvento="item.dt_evento" />
   </v-dialog>
 </template>
 
@@ -543,11 +332,9 @@ export default {
 
     formatDescricaoProd(item) {
       if (item)
-        return `${item.produto?.descricao} ${
-          item.produto?.prod_cor?.descricao || ""
-        } ${item.produto?.prod_tamanho?.descricao || ""} ${
-          item.produto?.prod_compri?.descricao || ""
-        }`;
+        return `${item.produto?.descricao} ${item.produto?.prod_cor?.descricao || ""
+          } ${item.produto?.prod_tamanho?.descricao || ""} ${item.produto?.prod_compri?.descricao || ""
+          }`;
     },
   },
   beforeMount() {
@@ -589,7 +376,7 @@ export default {
         useGrouping: false,
       });
       if (!this.item.vl_total) {
-        this.$alertaErro("Preimeiro informe o valor total.");
+        this.$alertaErro("Primeiro informe o valor total.");
         return;
       }
       if (!this.itemPagamento.data) {
@@ -621,11 +408,13 @@ export default {
           payload
         );
         this.item.caixa_lanc = dados.caixa_lanc;
-        this.item.vl_total = dados.vl_total;
-        this.item.vl_sinal = dados.vl_sinal;
-        this.item.vl_rest = dados.vl_rest;
+        //this.item.vl_total = dados.vl_total;
+        //this.item.vl_sinal = dados.vl_sinal;
+        //this.item.vl_rest = dados.vl_rest;
+        this.calcValores()
         this.itemPagamento = caixaModel();
         this.itemPagamento.data = moment().format("YYYY-MM-DD");
+        this.salvar()
         this.$emit("atualizarListagem");
       } catch (error) {
         console.log(error);
@@ -756,11 +545,9 @@ export default {
         this.listaProdutos = registros.map((produto) => {
           return {
             id: produto.id,
-            descricao: `${produto?.cod_barras || ""} ${produto?.descricao} ${
-              produto?.prod_cor?.descricao || ""
-            } ${produto?.prod_tamanho?.descricao || ""} ${
-              produto?.prod_compri?.descricao || ""
-            }`,
+            descricao: `${produto?.cod_barras || ""} ${produto?.descricao} ${produto?.prod_cor?.descricao || ""
+              } ${produto?.prod_tamanho?.descricao || ""} ${produto?.prod_compri?.descricao || ""
+              }`,
           };
         });
       } else {
@@ -817,6 +604,22 @@ export default {
         this.listaClientes = dados.registros;
       }
     },
+    verificarDatas(dtPro, dtRet, dtDev) {
+      if (moment(dtPro).isBefore(Date()) && (!this.isEdit)) {
+        this.$alertaErro('A data da prova precisa ser posterior a data atual!')
+        return
+      }
+      if (moment(dtRet).isBefore(dtPro)) {
+        this.$alertaErro('A data da retirada precisa ser posterior a data da prova!')
+        return
+      }
+      if (moment(dtRet).isBefore(dtDev)) {
+        this.$alertaErro('A data da devolução precisa ser posterior a data da retirada!')
+        return
+      }
+      return 1
+
+    },
     salvar() {
       this.salvarEsair = false;
       this.salvarItem();
@@ -832,6 +635,7 @@ export default {
       if (!this.$refs.form.validate()) {
         return;
       }
+
       const item = { ...this.item };
       const {
         dt_prova,
@@ -844,7 +648,9 @@ export default {
         vl_total,
         vl_rest,
       } = this.item;
-
+      if (!this.verificarDatas(dt_prova, dt_saida, dt_devol) && (this.item.contrato_status_id < 5)) {
+        return
+      }
       item.dt_prova = this.dataHoraToBack(dt_prova, hr_prova);
       item.dt_saida = this.dataHoraToBack(dt_saida, hr_saida);
       item.dt_devol = this.dataHoraToBack(dt_devol, "00:00");

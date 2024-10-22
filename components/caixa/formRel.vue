@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="open" persistent>
+  <v-dialog :v-model="true" persistent>
     <v-card>
       <v-card-title> Relatório de caixa</v-card-title>
       <v-card-text>
@@ -7,55 +7,26 @@
           <v-container>
             <v-row dense>
               <v-col cols="12" sm="3" md="3">
-                <v-autocomplete
-                  hide-no-data
-                  :rules="[]"
-                  label="Opções"
-                  outlined
-                  auto-select-first
-                  dense
-                  hide-selected
-                  :items="listaOpcoes"
-                  :item-text="(item) => item.descri"
-                  :item-value="(item) => item.campo"
-                  v-model="filtro.campo"
-                >
+                <v-autocomplete hide-no-data :rules="[]" label="Opções" outlined auto-select-first dense hide-selected
+                  :items="listaOpcoes" :item-text="(item) => item.descri" :item-value="(item) => item.campo"
+                  v-model="filtro.campo">
                 </v-autocomplete>
               </v-col>
               <v-col cols="6" sm="3" md="3">
-                <v-text-field
-                  type="date"
-                  :rules="[rules.required]"
-                  v-model="filtro.dt_ini"
-                  label="Data inicial"
-                  outlined
-                  dense
-                ></v-text-field>
+                <v-text-field type="date" :rules="[rules.required]" v-model="filtro.dt_ini" label="Data inicial"
+                  outlined dense></v-text-field>
               </v-col>
               <v-col cols="6" sm="3" md="3">
-                <v-text-field
-                  type="date"
-                  :rules="[rules.required]"
-                  v-model="filtro.dt_fim"
-                  label="Data final"
-                  outlined
-                  dense
-                ></v-text-field>
+                <v-text-field type="date" :rules="[rules.required]" v-model="filtro.dt_fim" label="Data final" outlined
+                  dense></v-text-field>
               </v-col>
               <v-col cols="12" sm="3" md="3">
                 <v-btn @click="exibirFiltro" width="100%">Exibir</v-btn>
               </v-col>
 
               <v-col cols="12">
-                <v-text-field
-                  dense
-                  outlined
-                  v-model="search"
-                  append-icon="mdi-magnify"
-                  label="Pesquisar"
-                  single-line
-                  hide-details
-                >
+                <v-text-field dense outlined v-model="search" append-icon="mdi-magnify" label="Pesquisar" single-line
+                  hide-details>
                 </v-text-field>
               </v-col>
               <v-col cols="12">
@@ -79,32 +50,21 @@
                     </div>
                   </v-col>
                 </v-row>
-                <v-data-table
-                  :item-class="rowClass"
-                  :headers="headers"
-                  :items="listagem"
-                  :search="search"
-                  dense
-                  mobile-breakpoint="0"
-                  @current-items="calcValores"
-                >
+                <v-data-table :item-class="rowClass" :headers="headers" :items="listagem" :search="search" dense
+                  mobile-breakpoint="0" @current-items="calcValores">
                   <!-- eslint-disable-next-line -->
                   <template v-slot:item.actions="{ item }">
-                    <v-icon @click.prevent="exibirItem(item)"
-                      >mdi-pencil</v-icon
-                    >
+                    <v-icon @click.prevent="exibirItem(item)">mdi-pencil</v-icon>
                     <!-- <span>
                             <v-icon @click.prevent="confirmeExclusao(item)">mdi-delete</v-icon>
                         </span> -->
                   </template>
                   <!-- eslint-disable-next-line -->
                   <template v-slot:item.ativo_status.descricao="{ item }">
-                    <div
-                      :class="[
-                        'justfy-center',
-                        corStatus(item.ativo_status_id),
-                      ]"
-                    >
+                    <div :class="[
+                      'justfy-center',
+                      corStatus(item.ativo_status_id),
+                    ]">
                       {{ item.ativo_status.descricao }}
                     </div>
                   </template>
@@ -127,16 +87,8 @@
         </v-form>
       </v-card-text>
     </v-card>
-    <caixaCadastro
-      v-if="exibCadastro"
-      :open="exibCadastro"
-      @close="exibCadastro = false"
-      @cancelar="cancelar"
-      @atualizarListagem="atualizarListagem"
-      :isEdit="isEdit"
-      :item="payload"
-      :listaSelecao="listaSelecao"
-    />
+    <caixaCadastro v-if="exibCadastro" :open="exibCadastro" @close="exibCadastro = false" @cancelar="cancelar"
+      @atualizarListagem="atualizarListagem" :isEdit="isEdit" :item="payload" :listaSelecao="listaSelecao" />
   </v-dialog>
 </template>
 

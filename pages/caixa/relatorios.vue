@@ -5,8 +5,17 @@
         <v-card-title>
           <v-row>
             <v-col cols="12" sm="4" md="4">
-              <h4>Caixa - {{ caixaData | formatDataDisplay }}</h4>
+              <h4>Relatórios de caixa</h4>
             </v-col>
+
+            <v-col cols="6" sm="3" md="3">
+              <v-text-field type="date" v-model="filtro.dt_ini" label="Data inicial" outlined dense></v-text-field>
+            </v-col>
+            <v-col cols="6" sm="3" md="3">
+              <v-text-field type="date" v-model="filtro.dt_fim" label="Data final" outlined dense></v-text-field>
+            </v-col>
+
+
 
             <v-spacer></v-spacer>
             <v-col cols="12" sm="6" md="3">
@@ -16,22 +25,8 @@
             </v-col>
           </v-row>
         </v-card-title>
-        <v-row justify="center">
-          <v-col cols="3" class="text-center">
-            <h3>Créditos:</h3>
-            <div class="green--text">{{ totalCred | formatMoedaDisplay }}</div>
-          </v-col>
-          <v-col cols="3" class="text-center">
-            <h3>Débitos:</h3>
-            <div class="red--text">{{ totalDebt | formatMoedaDisplay }}</div>
-          </v-col>
-          <v-col cols="3" class="text-center">
-            <h3>Saldo:</h3>
-            <div :class="totalSaldo >= 0 ? 'green--text' : 'red--text'">
-              {{ totalSaldo | formatMoedaDisplay }}
-            </div>
-          </v-col>
-        </v-row>
+
+
         <v-data-table :item-class="rowClass" :headers="headers" :items="listagem" :search="search" dense
           mobile-breakpoint="0" @current-items="calcValores">
           <!-- eslint-disable-next-line -->
@@ -70,9 +65,6 @@
           </v-btn>
           <v-btn color="error" elevation="2" outlined dense @click.prevent.stop="novoItem('s')">
             Saída -</v-btn>
-
-          <v-btn color="primary" elevation="2" outlined dense to="/caixa/relatorios">
-            Relatórios -</v-btn>
         </v-container>
       </v-card>
     </v-col>
@@ -94,6 +86,9 @@ export default {
 
   data() {
     return {
+      filtro: {},
+      listaTipoRel: ['Caixa por dia', 'Extrato'],
+      tipo_rel: null,
       listagem: [],
       caixaData: moment(),
       totalDebt: 0.0,
